@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Criar conta</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/cadastro.css"/>
+</head>
+<body>
+
+  <a href="index.html" class="back">← Voltar</a>
+
+  <div class="auth-wrap">
+    <img src="assets/lirica.png" alt="Bookfly" class="auth-logo"/>
+    <h1>Criar conta</h1>
+
+    <div class="auth-form">
+      <div class="bf-alert bf-alert-error" id="alertMsg"></div>
+
+      <input class="bf-input" type="text" id="nome"
+             placeholder="Nome completo" autocomplete="name"/>
+
+      <input class="bf-input" type="email" id="email"
+             placeholder="Email" autocomplete="email"/>
+
+      <input class="bf-input" type="password" id="senha"
+             placeholder="Senha" autocomplete="new-password"/>
+      <span class="password-hint">Mínimo de 6 caracteres</span>
+
+      <button class="btn-full" id="submitBtn" onclick="handleCadastro()">
+        <span id="btnText">Criar conta</span>
+        <div class="bf-spinner" id="spinner"></div>
+      </button>
+    </div>
+
+    <p class="auth-footer">
+      Já tem conta? <a href="login.html">Entrar</a>
+    </p>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/cadastro.js"></script>
+
+</body>
+</html>

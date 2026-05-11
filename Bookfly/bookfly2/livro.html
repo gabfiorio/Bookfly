@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Livro</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/livro.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost topnav-link">← Feed</a>
+  </nav>
+
+  <div class="page-wrap" id="pageWrap">
+
+    <div class="book-hero" id="bookHero">
+      <div class="book-hero-cover" id="heroCover"></div>
+      <div class="book-hero-info">
+        <div class="book-genre-tag" id="heroGenre"></div>
+        <h1 class="book-hero-title" id="heroTitle"></h1>
+        <div class="book-hero-author" id="heroAuthor"></div>
+        <div class="book-hero-meta" id="heroMeta"></div>
+        <div class="book-hero-rating" id="heroRating"></div>
+        <div class="book-hero-desc" id="heroDesc"></div>
+        <div class="book-hero-actions" id="heroActions"></div>
+      </div>
+    </div>
+
+    <div class="tabs" id="bookTabs">
+      <button class="tab-btn active" onclick="switchTab('reviews', this)">💬 Avaliações</button>
+      <button class="tab-btn" onclick="switchTab('readers', this)">👥 Leitores</button>
+      <button class="tab-btn" onclick="switchTab('details', this)">📋 Detalhes</button>
+    </div>
+
+    <div class="tab-pane active" id="tab-reviews">
+      <div class="reviews-summary" id="reviewsSummary"></div>
+      <div id="reviewsList"></div>
+    </div>
+
+    <div class="tab-pane" id="tab-readers">
+      <div id="readersList"></div>
+    </div>
+
+    <div class="tab-pane" id="tab-details">
+      <div class="details-grid" id="detailsGrid"></div>
+    </div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/covers.js"></script>
+  <script src="js/livro.js"></script>
+</body>
+</html>

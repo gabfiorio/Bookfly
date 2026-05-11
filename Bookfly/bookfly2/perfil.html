@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Perfil</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/perfil.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">← Feed</a>
+    <button onclick="logout()" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">Sair</button>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="profile-header">
+      <div class="avatar-wrap">
+        <div class="profile-avatar" id="profileAvatar" onclick="triggerAvatarUpload()"></div>
+        <div class="avatar-edit-btn" onclick="triggerAvatarUpload()" title="Trocar foto">✏️</div>
+        <input type="file" id="avatarInput" accept="image/*" onchange="handleAvatarChange(event)"/>
+      </div>
+
+      <div class="profile-info">
+        <div class="profile-name" id="profileName"></div>
+        <div class="profile-email" id="profileEmail"></div>
+        <div class="profile-bio" id="profileBio"></div>
+        <div class="profile-stats">
+          <div class="stat-item"><div class="stat-num" id="statLidos">0</div><div class="stat-label">Lidos</div></div>
+          <div class="stat-item"><div class="stat-num" id="statLendo">0</div><div class="stat-label">Lendo</div></div>
+          <div class="stat-item"><div class="stat-num" id="statQueremLer">0</div><div class="stat-label">Quero ler</div></div>
+          <div class="stat-item"><div class="stat-num" id="statSeguidores">12</div><div class="stat-label">Seguidores</div></div>
+        </div>
+        <div class="profile-actions">
+          <a href="avaliar.html" class="bf-btn bf-btn-primary" style="font-size:13px;padding:9px 20px;">⭐ Avaliar livro</a>
+          <a href="desafio.html" class="bf-btn bf-btn-ghost"   style="font-size:13px;padding:9px 20px;">🎯 Desafio</a>
+          <button class="bf-btn bf-btn-ghost" style="font-size:13px;padding:9px 20px;" onclick="editProfile()">Editar perfil</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('posts', this)">Posts</button>
+      <button class="tab-btn" onclick="switchTab('lidos', this)">📚 Lidos</button>
+      <button class="tab-btn" onclick="switchTab('lendo', this)">📖 Lendo</button>
+      <button class="tab-btn" onclick="switchTab('quererlev', this)">🔖 Quero ler</button>
+      <button class="tab-btn" onclick="switchTab('avaliados', this)">⭐ Avaliados</button>
+    </div>
+
+    <div class="tab-pane active" id="tab-posts">
+      <div id="myPosts"></div>
+    </div>
+
+    <div class="tab-pane" id="tab-lidos">
+      <div class="shelf-grid" id="shelf-lidos"></div>
+      <button class="add-book-btn" onclick="addToShelf('lidos')">+ Adicionar livro lido</button>
+    </div>
+
+    <div class="tab-pane" id="tab-lendo">
+      <div class="shelf-grid" id="shelf-lendo"></div>
+      <button class="add-book-btn" onclick="addToShelf('lendo')">+ Adicionar livro que estou lendo</button>
+    </div>
+
+    <div class="tab-pane" id="tab-quererlev">
+      <div class="shelf-grid" id="shelf-quererlev"></div>
+      <button class="add-book-btn" onclick="addToShelf('quererlev')">+ Adicionar à lista</button>
+    </div>
+
+    <div class="tab-pane" id="tab-avaliados">
+      <div class="shelf-grid" id="shelf-avaliados"></div>
+      <button class="add-book-btn" onclick="window.location.href='avaliar.html'">+ Avaliar novo livro</button>
+    </div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/covers.js"></script>
+  <script src="js/perfil.js"></script>
+</body>
+</html>

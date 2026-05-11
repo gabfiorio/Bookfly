@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Home</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/home.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="busca.html" class="topnav-icon-btn" title="Buscar">🔍</a>
+    <a href="notificacoes.html" class="topnav-icon-btn topnav-notif-wrap" title="Notificações">🔔<span class="bf-notif-dot"></span></a>
+    <a href="perfil.html" id="navAvatar" class="topnav-avatar" title="Meu perfil"></a>
+    <button onclick="logout()" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">
+      Sair
+    </button>
+  </nav>
+
+  <div class="layout">
+
+    <main class="feed-col">
+
+      <div class="composer">
+        <div class="composer-top">
+          <div class="composer-avatar" id="composerAvatar"></div>
+          <textarea class="composer-textarea" id="postText"
+            placeholder="O que você está lendo?" maxlength="500"></textarea>
+        </div>
+        <div class="composer-actions">
+          <button class="composer-book-tag" onclick="tagBook()">
+            📚 Marcar livro
+          </button>
+          <div class="spacer"></div>
+          <span id="charCount" class="composer-count">0/500</span>
+          <button class="bf-btn bf-btn-primary composer-submit" onclick="publishPost()">Publicar</button>
+        </div>
+      </div>
+
+      <div id="feedContainer"></div>
+
+      <div class="load-more">
+        <button id="loadMoreBtn" onclick="loadMore()">Carregar mais</button>
+      </div>
+
+    </main>
+
+    <aside class="sidebar">
+
+      <div class="sidebar-card">
+        <h4>Leitores para seguir</h4>
+        <div id="suggestedUsers"></div>
+      </div>
+
+      <div class="sidebar-card sidebar-challenge">
+        <div class="sc-header">
+          <h4>🎯 Desafio de leitura</h4>
+        </div>
+        <div id="sidebarChallenge"></div>
+        <a href="desafio.html" class="sc-link">Ver desafio completo →</a>
+      </div>
+
+      <div class="sidebar-card">
+        <h4>📈 Livros em alta</h4>
+        <div id="trendingBooks"></div>
+      </div>
+
+    </aside>
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

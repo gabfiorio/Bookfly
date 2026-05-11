@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Descobrir</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/descobrir.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="busca.html" class="topnav-icon-btn" title="Buscar">🔍</a>
+    <a href="notificacoes.html" class="topnav-icon-btn topnav-notif-wrap" title="Notificações">🔔<span class="bf-notif-dot"></span></a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost topnav-link">← Feed</a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="discover-hero">
+      <h1 class="discover-title">🧭 Descobrir</h1>
+      <p class="discover-sub">Explore livros por gênero e encontre sua próxima leitura.</p>
+    </div>
+
+    <div class="genre-filters" id="genreFilters"></div>
+
+    <div class="books-grid" id="booksGrid"></div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/covers.js"></script>
+  <script src="js/descobrir.js"></script>
+</body>
+</html>

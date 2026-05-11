@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Desafio de Leitura</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/desafio.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost topnav-link">← Feed</a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="challenge-hero" id="challengeHero">
+      <div class="challenge-year" id="challengeYear"></div>
+      <div class="challenge-title">Desafio de Leitura</div>
+      <div class="challenge-ring-wrap">
+        <svg class="challenge-ring" viewBox="0 0 120 120">
+          <circle class="ring-bg"   cx="60" cy="60" r="52"/>
+          <circle class="ring-fill" cx="60" cy="60" r="52" id="ringFill"/>
+        </svg>
+        <div class="challenge-ring-inner">
+          <div class="ring-read"  id="ringRead">0</div>
+          <div class="ring-label">de</div>
+          <div class="ring-goal"  id="ringGoal">12</div>
+        </div>
+      </div>
+      <div class="challenge-pct" id="challengePct">0%</div>
+      <div class="challenge-msg" id="challengeMsg"></div>
+      <button class="bf-btn bf-btn-ghost challenge-edit-btn" onclick="editGoal()">✏️ Alterar meta</button>
+    </div>
+
+    <div class="section-card" id="monthlySection">
+      <h3 class="section-heading">📅 Progresso mensal</h3>
+      <div class="monthly-grid" id="monthlyGrid"></div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-heading-row">
+        <h3 class="section-heading">📚 Livros lidos este ano</h3>
+        <button class="add-book-btn-sm" onclick="addChallengeBook()">+ Adicionar</button>
+      </div>
+      <div class="challenge-books-list" id="challengeBooksList"></div>
+    </div>
+
+    <div class="section-card">
+      <h3 class="section-heading">🏆 Histórico</h3>
+      <div class="history-list" id="historyList"></div>
+    </div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/covers.js"></script>
+  <script src="js/desafio.js"></script>
+</body>
+</html>

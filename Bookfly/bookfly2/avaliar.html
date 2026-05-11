@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Avaliar livro</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/avaliar.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="perfil.html" class="bf-btn bf-btn-ghost topnav-link">← Perfil</a>
+  </nav>
+
+  <div class="page-wrap">
+    <h1 class="page-title">⭐ Avaliar um livro</h1>
+
+    <div class="search-wrap">
+      <input class="search-input" type="text" id="searchInput"
+             placeholder="Busque pelo título ou autor…"
+             oninput="handleSearch()" autocomplete="off"/>
+      <button class="search-btn" onclick="doSearch()">🔍</button>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+
+    <div class="book-preview" id="bookPreview">
+      <div class="preview-cover" id="previewCover"></div>
+      <div class="preview-info">
+        <div class="preview-title"  id="previewTitle"></div>
+        <div class="preview-author" id="previewAuthor"></div>
+        <div class="preview-meta"   id="previewMeta"></div>
+        <div class="preview-desc"   id="previewDesc"></div>
+      </div>
+    </div>
+
+    <div class="rating-section" id="ratingSection">
+      <div class="rating-label">Sua nota</div>
+      <div class="stars-wrap" id="starsWrap">
+        <button class="star-btn" data-v="1">★</button>
+        <button class="star-btn" data-v="2">★</button>
+        <button class="star-btn" data-v="3">★</button>
+        <button class="star-btn" data-v="4">★</button>
+        <button class="star-btn" data-v="5">★</button>
+      </div>
+      <div class="stars-caption" id="starsCaption">Clique para avaliar</div>
+    </div>
+
+    <div class="review-form" id="reviewForm">
+      <div class="review-label">Sua opinião <span class="review-hint">(opcional)</span></div>
+      <textarea class="review-textarea" id="reviewText"
+                placeholder="O que você achou do livro? Conte para a comunidade…"
+                maxlength="1000" oninput="updateCharCount()"></textarea>
+      <div class="review-footer">
+        <span class="char-count" id="charCount">0 / 1000</span>
+      </div>
+    </div>
+
+    <button class="submit-review" id="submitBtn" onclick="submitReview()">
+      <span id="submitText">Publicar avaliação</span>
+      <div class="bf-spinner" id="submitSpinner"></div>
+    </button>
+
+    <div class="success-card" id="successCard">
+      <div class="success-emoji">🎉</div>
+      <div class="success-title">Avaliação publicada!</div>
+      <div class="success-sub">Sua avaliação foi compartilhada com a comunidade.</div>
+      <div class="success-actions">
+        <a href="home.html"   class="bf-btn bf-btn-primary">Ver feed</a>
+        <a href="avaliar.html" class="bf-btn bf-btn-ghost" onclick="resetForm()">Avaliar outro</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/covers.js"></script>
+  <script src="js/avaliar.js"></script>
+</body>
+</html>

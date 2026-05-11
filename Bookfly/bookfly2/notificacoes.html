@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Notificações</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/notificacoes.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost topnav-link">← Feed</a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">🔔 Notificações</h1>
+      <button class="mark-all-btn" onclick="markAllRead()" id="markAllBtn">Marcar todas como lidas</button>
+    </div>
+
+    <div class="notif-filters">
+      <button class="notif-filter active" onclick="filterNotif('todas', this)">Todas</button>
+      <button class="notif-filter" onclick="filterNotif('curtidas', this)">❤️ Curtidas</button>
+      <button class="notif-filter" onclick="filterNotif('comentarios', this)">💬 Comentários</button>
+      <button class="notif-filter" onclick="filterNotif('seguidores', this)">👤 Seguidores</button>
+    </div>
+
+    <div id="notifList"></div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/notificacoes.js"></script>
+</body>
+</html>

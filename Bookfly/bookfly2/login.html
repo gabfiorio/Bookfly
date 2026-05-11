@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Entrar</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/login.css"/>
+</head>
+<body>
+
+  <a href="index.html" class="back">← Voltar</a>
+
+  <div class="auth-wrap">
+    <img src="assets/lirica.png" alt="Bookfly" class="auth-logo"/>
+    <h1>Bem-vindo de volta</h1>
+
+    <div class="auth-form">
+      <div class="bf-alert bf-alert-error" id="alertMsg"></div>
+
+      <input class="bf-input" type="email" id="email"
+             placeholder="Email" autocomplete="email"/>
+
+      <input class="bf-input" type="password" id="senha"
+             placeholder="Senha" autocomplete="current-password"/>
+
+      <button class="btn-full" id="submitBtn" onclick="handleLogin()">
+        <span id="btnText">Entrar</span>
+        <div class="bf-spinner" id="spinner"></div>
+      </button>
+    </div>
+
+    <p class="auth-footer">
+      Não tem conta? <a href="cadastro.html">Criar conta</a>
+    </p>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

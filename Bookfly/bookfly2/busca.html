@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Busca</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/busca.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost topnav-link">← Feed</a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="search-hero">
+      <div class="search-bar-wrap">
+        <span class="search-icon">🔍</span>
+        <input id="searchInput" class="search-main-input" type="text"
+               placeholder="Buscar livros, autores ou leitores…"
+               oninput="handleSearch()" autocomplete="off" autofocus/>
+        <button class="search-clear" id="clearBtn" onclick="clearSearch()" style="display:none">×</button>
+      </div>
+
+      <div class="search-tabs" id="searchTabs" style="display:none">
+        <button class="stab active" onclick="switchSearchTab('livros', this)">📚 Livros</button>
+        <button class="stab" onclick="switchSearchTab('leitores', this)">👥 Leitores</button>
+      </div>
+    </div>
+
+    <div id="defaultView">
+      <h3 class="section-title">📈 Mais buscados</h3>
+      <div id="popularList"></div>
+    </div>
+
+    <div id="resultsView" style="display:none">
+      <div id="livrosResults" class="stab-pane active"></div>
+      <div id="leitoresResults" class="stab-pane"></div>
+    </div>
+
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/covers.js"></script>
+  <script src="js/busca.js"></script>
+</body>
+</html>
