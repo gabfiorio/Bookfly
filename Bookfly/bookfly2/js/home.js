@@ -22,9 +22,9 @@ if (savedAvatar) {
 const AVATAR_COLORS = ['#8681BD','#F7A8B8','#F2956A','#A8D5BA','#F5D97E','#b0acda'];
 
 const MOCK_USERS = [
-  { id: 2, nome: 'Maria Oliveira', livros: 48, cor: AVATAR_COLORS[1] },
-  { id: 3, nome: 'João Silva',     livros: 31, cor: AVATAR_COLORS[2] },
-  { id: 4, nome: 'Ana Costa',      livros: 72, cor: AVATAR_COLORS[3] },
+  { id: 2, nome: 'Nina Muller', livros: 48, cor: AVATAR_COLORS[1] },
+  { id: 3, nome: 'Duda Almeida',     livros: 31, cor: AVATAR_COLORS[2] },
+  { id: 4, nome: 'Jaime Soldado',      livros: 72, cor: AVATAR_COLORS[3] },
 ];
 
 const MOCK_TRENDING = [
@@ -33,14 +33,14 @@ const MOCK_TRENDING = [
 ];
 
 const ALL_MOCK_POSTS = [
-  { id: 1,  nome: 'Maria Oliveira', cor: AVATAR_COLORS[1], tempo: '2min',  texto: 'Acabei de terminar Duna e estou completamente apaixonada! A construção do mundo é incrível 🏜️', livro: 'Duna',     livroId: 1, stars: 5,    curtidas: 14, comentarios: [] },
-  { id: 2,  nome: 'João Silva',     cor: AVATAR_COLORS[2], tempo: '15min', texto: 'Alguém mais acha que a trilogia Fundação é ainda mais épica que o hype? Estou no segundo livro e mal consigo parar.', livro: 'Fundação', livroId: 3, stars: null, curtidas: 7,  comentarios: [] },
-  { id: 3,  nome: 'Ana Costa',      cor: AVATAR_COLORS[3], tempo: '1h',    texto: '1984 continua perturbadoramente atual. Releitura bate diferente.', livro: '1984',     livroId: 2, stars: 5,    curtidas: 23, comentarios: [
-    { id: 100, nome: 'Maria Oliveira', cor: AVATAR_COLORS[1], texto: 'Concordo demais! Terminei semana passada.', tempo: '45min' }
+  { id: 1,  nome: 'Nina Muller', cor: AVATAR_COLORS[1], tempo: '2min',  texto: 'Acabei de terminar Duna e estou completamente apaixonada! A construção do mundo é incrível 🏜️', livro: 'Duna',     livroId: 1, stars: 5,    curtidas: 14, comentarios: [] },
+  { id: 2,  nome: 'Duda Almeida',     cor: AVATAR_COLORS[2], tempo: '15min', texto: 'Alguém mais acha que a trilogia Fundação é ainda mais épica que o hype? Estou no segundo livro e mal consigo parar.', livro: 'Fundação', livroId: 3, stars: null, curtidas: 7,  comentarios: [] },
+  { id: 3,  nome: 'Amanda Pink',      cor: AVATAR_COLORS[3], tempo: '1h',    texto: '1984 continua perturbadoramente atual. Releitura bate diferente.', livro: '1984',     livroId: 2, stars: 5,    curtidas: 23, comentarios: [
+    { id: 100, nome: 'Raissa Leal', cor: AVATAR_COLORS[1], texto: 'Concordo demais! Terminei semana passada.', tempo: '45min' }
   ]},
-  { id: 4,  nome: 'Pedro Mendes',   cor: AVATAR_COLORS[0], tempo: '2h',    texto: 'Começando O Senhor dos Anéis pela primeira vez. Desejo-me sorte com o vocabulário do Tolkien 😅', livro: null, livroId: null, stars: null, curtidas: 5, comentarios: [] },
-  { id: 5,  nome: 'Ana Costa',      cor: AVATAR_COLORS[3], tempo: '3h',    texto: 'Dica: se você gostou de Sapiens, leia também "21 Lições para o Século 21". A sequência faz ainda mais sentido hoje.', livro: 'Sapiens', livroId: 9, stars: 4, curtidas: 19, comentarios: [] },
-  { id: 6,  nome: 'João Silva',     cor: AVATAR_COLORS[2], tempo: '5h',    texto: 'Crime e Castigo é uma montanha-russa emocional. Não consigo parar de pensar no Raskólnikov.', livro: 'Crime e Castigo', livroId: 5, stars: 5, curtidas: 11, comentarios: [] },
+  { id: 4,  nome: 'Jaime Soldado',   cor: AVATAR_COLORS[0], tempo: '2h',    texto: 'Começando O Senhor dos Anéis pela primeira vez. Desejo-me sorte com o vocabulário do Tolkien 😅', livro: null, livroId: null, stars: null, curtidas: 5, comentarios: [] },
+  { id: 5,  nome: 'Ariana Grande',      cor: AVATAR_COLORS[3], tempo: '3h',    texto: 'Dica: se você gostou de Sapiens, leia também "21 Lições para o Século 21". A sequência faz ainda mais sentido hoje.', livro: 'Sapiens', livroId: 9, stars: 4, curtidas: 19, comentarios: [] },
+  { id: 6,  nome: 'Gabriel Fiorino',     cor: AVATAR_COLORS[2], tempo: '5h',    texto: 'Crime e Castigo é uma montanha-russa emocional. Não consigo parar de pensar no Raskólnikov.', livro: 'Crime e Castigo', livroId: 5, stars: 5, curtidas: 11, comentarios: [] },
 ];
 
 let page = 1;
