@@ -9,7 +9,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  cursor: url('../assets/cursorbookfly.svg') 4 4, auto; /* por a imagem*/
+  /*cursor: url('../assets/cursorbookfly.svg') 4 4, auto; ---- por a imagem*/
 }
 
 :root {
