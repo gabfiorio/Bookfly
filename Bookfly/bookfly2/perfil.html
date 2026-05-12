@@ -24,6 +24,7 @@
       <div class="avatar-wrap">
         <div class="profile-avatar" id="profileAvatar" onclick="triggerAvatarUpload()"></div>
         <div class="avatar-edit-btn" onclick="triggerAvatarUpload()" title="Trocar foto">✏️</div>
+        <button id="removeAvatarBtn" class="avatar-remove-btn" onclick="removeAvatar()" style="display:none" title="Remover foto">🗑️</button>
         <input type="file" id="avatarInput" accept="image/*" onchange="handleAvatarChange(event)"/>
       </div>
 
@@ -85,3 +86,4 @@
   <script src="js/perfil.js"></script>
 </body>
 </html>
+
