@@ -139,13 +139,11 @@ body { background: var(--beige); }
 }
 .add-book-btn:hover { background: var(--purple-xlight); }
 
-/* ── Modal label ── */
 .modal-label {
   display: block; font-size: 13px; font-weight: 600;
   color: var(--brown-mid); margin-bottom: 6px;
 }
 
-/* ── Reading progress bar ── */
 .progress-wrap {
   display: flex; align-items: center; gap: 6px; margin-top: 8px;
 }
@@ -166,6 +164,20 @@ body { background: var(--beige); }
 }
 .progress-edit-btn:hover { opacity: 1; }
 
-/* ── post-book-tag as link in perfil ── */
 a.post-book-tag { text-decoration: none; }
 a.post-book-tag:hover { background: var(--purple-light); }
+
+.avatar-remove-btn {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2px solid var(--white);
+  background: #c0392b; color: white;
+  font-size: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--transition), transform var(--transition);
+}
+.avatar-remove-btn:hover {
+  background: #a93226;
+  transform: scale(1.1);
+}
