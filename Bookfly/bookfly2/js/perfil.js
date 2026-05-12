@@ -4,8 +4,11 @@ const avatarEl   = document.getElementById('profileAvatar');
 const savedAvatar = localStorage.getItem('bf_avatar');
 const savedBio    = localStorage.getItem('bf_bio') || '';
 
-if (savedAvatar) { avatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar"/>`; }
-else             { avatarEl.textContent = initials(user.nome); }
+if (savedAvatar) {
+  avatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar"/>`;
+  document.getElementById('removeAvatarBtn').style.display = 'block'; // ← mostra o botão
+}
+else { avatarEl.textContent = initials(user.nome); }
 
 document.getElementById('profileName').textContent  = user.nome;
 document.getElementById('profileEmail').textContent = user.email;
@@ -138,9 +141,26 @@ function handleAvatarChange(e) {
     const src = ev.target.result;
     localStorage.setItem('bf_avatar', src);
     avatarEl.innerHTML = `<img src="${src}" alt="avatar"/>`;
+    document.getElementById('removeAvatarBtn').style.display = 'block'; // ← mostra o botão
     showToast('Foto atualizada!');
   };
   reader.readAsDataURL(file);
+}
+
+// ── Remover foto de perfil ──
+function removeAvatar() {
+  confirmModal({
+    title: 'Remover foto',
+    message: 'Tem certeza que deseja remover sua foto de perfil?',
+    confirmLabel: 'Remover',
+    onConfirm: () => {
+      localStorage.removeItem('bf_avatar');
+      avatarEl.innerHTML = '';
+      avatarEl.textContent = initials(user.nome);
+      document.getElementById('removeAvatarBtn').style.display = 'none'; // ← esconde o botão
+      showToast('Foto removida.');
+    },
+  });
 }
 
 // ── Adicionar livro com modal ──
@@ -236,7 +256,6 @@ renderPosts();
 Object.keys(SHELVES).forEach(renderShelf);
 updateStats();
 
-// Init theme toggle icon
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('themeToggleBtn');
   if (btn) renderThemeToggle(btn);
