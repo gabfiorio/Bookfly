@@ -140,3 +140,184 @@ footer {
   font-size: 12px; color: var(--brown-light);
   border-top: 1px solid var(--beige-dark);
 }
+
+.books-carousel {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-top: 48px;
+  margin-bottom: 8px;
+  animation: fadeUp 0.8s ease 0.35s both;
+}
+
+.carousel-label {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brown-light);
+  margin-bottom: 18px;
+}
+
+.carousel-track-wrap {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 7%, black 93%, transparent 100%);
+}
+
+.carousel-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: carousel-scroll 32s linear infinite;
+  padding: 8px 0 12px;
+}
+.carousel-track:hover { animation-play-state: paused; }
+
+.carousel-track-rev {
+  animation: carousel-scroll-rev 40s linear infinite;
+  margin-top: 12px;
+}
+.carousel-track-rev:hover { animation-play-state: paused; }
+
+@keyframes carousel-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes carousel-scroll-rev {
+  from { transform: translateX(-50%); }
+  to   { transform: translateX(0); }
+}
+
+.carousel-book {
+  width: 84px;
+  height: 120px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  box-shadow: 0 4px 14px rgba(46,35,24,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.carousel-book:hover {
+  transform: scale(1.1) rotate(-2deg);
+  box-shadow: 0 8px 24px rgba(46,35,24,0.28);
+}
+
+.carousel-book-spine {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  border-radius: 7px 0 0 7px;
+}
+
+.carousel-book-emoji {
+  font-size: 34px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.carousel-book-title {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  padding: 18px 6px 6px;
+  font-size: 8px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  line-height: 1.25;
+}
+
+html.dark .carousel-book {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+}
+html.dark .carousel-book:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
+
+.books-carousel {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  margin-top: 48px;
+  margin-bottom: 8px;
+  animation: fadeUp 0.8s ease 0.35s both;
+}
+
+.carousel-label {
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--brown-light);
+  margin-bottom: 18px;
+}
+
+.carousel-track-wrap {
+  overflow: hidden;
+  width: 100%;
+  mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+}
+
+.carousel-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  animation: carousel-scroll 36s linear infinite;
+  padding: 8px 0 12px;
+}
+
+@keyframes carousel-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.carousel-book {
+  width: 84px;
+  height: 120px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  box-shadow: 0 4px 14px rgba(46,35,24,0.2);
+}
+
+.carousel-book-spine {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 6px;
+  border-radius: 7px 0 0 7px;
+}
+
+.carousel-book-emoji {
+  font-size: 34px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.carousel-book-title {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+  padding: 18px 6px 6px;
+  font-size: 8px;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  line-height: 1.25;
+}
+
+html.dark .carousel-book {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+}
