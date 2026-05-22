@@ -187,7 +187,7 @@ body { background: var(--beige); }
 }
 .comment-bubble {
   background: var(--beige); border-radius: var(--radius-md);
-  padding: 8px 12px; flex: 1; font-size: 13px; line-height: 1.5;
+  padding: 8px 12px; flex: 1; font-size: 13px; line-height: 1.5; margin-bottom: 5px;
 }
 .comment-name { font-weight: 600; margin-right: 6px; }
 .comment-time { font-size: 11px; color: var(--brown-light); margin-left: 6px; }
