@@ -1,3 +1,5 @@
+if (typeof Auth !== 'undefined' && Auth.isLogged()) window.location.href = Auth.getLandingPage();
+
 const stars = document.querySelectorAll('.star');
 stars.forEach((s, i) => {
   s.addEventListener('mouseenter', () => {

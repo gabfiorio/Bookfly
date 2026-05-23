@@ -152,3 +152,52 @@ body { background: var(--beige); }
   display: block; font-size: 13px; font-weight: 600;
   color: var(--brown-mid); margin-bottom: 6px;
 }
+
+@media (max-width: 640px) {
+  .challenge-hero,
+  .section-card {
+    padding: 20px 16px;
+  }
+
+  .challenge-ring-wrap,
+  .challenge-ring {
+    width: 132px;
+    height: 132px;
+  }
+
+  .ring-read {
+    font-size: 30px;
+  }
+
+  .monthly-grid {
+    height: 82px;
+  }
+
+  .history-item {
+    align-items: flex-start;
+  }
+
+  .history-stat,
+  .history-pct {
+    width: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .challenge-title {
+    font-size: 20px;
+  }
+
+  .goal-presets {
+    flex-direction: column;
+  }
+
+  .goal-preset {
+    width: 100%;
+  }
+}

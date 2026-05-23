@@ -309,6 +309,118 @@ img { display: block; max-width: 100%; }
 }
 
 /* ══════════════════════════════════════════════════════════════
+   RESPONSIVE FOUNDATION
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    order: 2;
+  }
+
+  .feed-col {
+    order: 1;
+  }
+
+  .bf-modal-md,
+  .bf-modal-lg {
+    max-width: calc(100vw - 32px);
+  }
+}
+
+@media (max-width: 720px) {
+  .topnav,
+  .navbar {
+    padding: 0 14px;
+    gap: 10px;
+  }
+
+  .topnav {
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .topnav-spacer {
+    display: none;
+  }
+
+  .layout,
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .composer-top,
+  .book-hero,
+  .reviews-summary,
+  .profile-header,
+  .book-preview,
+  .notif-item,
+  .book-result-card,
+  .user-result-card,
+  .challenge-book-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .composer-actions,
+  .post-actions,
+  .profile-actions,
+  .shelf-actions,
+  .success-actions {
+    flex-wrap: wrap;
+  }
+
+  .bf-modal-body,
+  .bf-modal-footer {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .bf-modal-footer {
+    flex-direction: column;
+  }
+
+  .bf-modal-footer .bf-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .bf-btn {
+    width: 100%;
+  }
+
+  .topnav-icon-btn,
+  .theme-toggle,
+  .topnav-avatar,
+  .bf-modal-close {
+    width: 34px;
+    height: 34px;
+  }
+
+  .topnav-link,
+  .bf-btn,
+  .load-more button,
+  .sug-follow,
+  .stab,
+  .genre-btn,
+  .notif-filter,
+  .goal-preset {
+    font-size: 12px;
+  }
+
+  .books-carousel {
+    margin-top: 32px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
    DARK MODE
    ══════════════════════════════════════════════════════════════ */
 html.dark {

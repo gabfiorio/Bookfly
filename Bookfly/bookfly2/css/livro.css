@@ -188,3 +188,36 @@ body { background: var(--beige); }
   .reviews-summary { flex-direction: column; gap: 16px; }
   .details-grid    { grid-template-columns: 1fr; }
 }
+
+@media (max-width: 420px) {
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .book-hero,
+  .reviews-summary,
+  .review-card,
+  .reader-card,
+  .detail-item {
+    padding: 16px;
+  }
+
+  .book-hero-title {
+    font-size: 22px;
+  }
+
+  .readers-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shelf-status-wrap,
+  .shelf-actions {
+    width: 100%;
+  }
+
+  .shelf-status-btn,
+  .shelf-action-btn {
+    width: 100%;
+  }
+}

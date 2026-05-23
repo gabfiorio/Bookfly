@@ -250,3 +250,77 @@ a.post-book-tag:hover { background: var(--purple-light); }
   transition: color var(--transition);
 }
 .sc-link:hover { color: var(--purple-dark); }
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    order: 2;
+  }
+
+  .feed-col {
+    order: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .topnav {
+    padding: 10px 14px;
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .topnav-spacer {
+    display: none;
+  }
+
+  .composer-top,
+  .composer-actions,
+  .post-actions,
+  .suggested-user,
+  .trending-book,
+  .sc-mini-ring-wrap {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .composer-actions {
+    gap: 8px;
+  }
+
+  .composer-book-tag,
+  .composer-submit,
+  .load-more button,
+  .sug-follow {
+    width: 100%;
+  }
+
+  .sidebar-card,
+  .composer,
+  .post-card {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 520px) {
+  .layout {
+    padding-top: 92px;
+  }
+
+  .composer-avatar,
+  .post-avatar,
+  .sug-avatar,
+  .comment-avatar,
+  .topnav-avatar,
+  .topnav-icon-btn,
+  .theme-toggle {
+    width: 34px;
+    height: 34px;
+  }
+
+  .post-actions {
+    gap: 12px;
+  }
+}

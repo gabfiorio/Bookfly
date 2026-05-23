@@ -1,4 +1,4 @@
-if (Auth.isLogged()) window.location.href = 'home.html';
+if (Auth.isLogged()) window.location.href = Auth.getLandingPage();
 
 async function handleCadastro() {
   const nome  = document.getElementById('nome').value.trim();
@@ -28,7 +28,7 @@ async function handleCadastro() {
     await new Promise(r => setTimeout(r, 900));
     Auth.setToken('mock-token-123');
     Auth.setUser({ id: 1, nome, email });
-    window.location.href = 'home.html';
+    window.location.href = Auth.getLandingPage();
   } catch (err) {
     alertEl.textContent = err.message || 'Erro ao criar conta.';
     alertEl.style.display = 'block';

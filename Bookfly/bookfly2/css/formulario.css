@@ -1,0 +1,264 @@
+
+.page-wrap { 
+    padding: 32px 20px; 
+    /* Mudado de #fbf9f6 fixo para transparente ou uma variável do seu base.css */
+    background-color: transparent; 
+}
+
+.form-topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brown-light);
+    font-weight: 700;
+}
+
+.form-topbar h1 {
+    font-family: var(--font-display);
+    font-size: 30px;
+    line-height: 1.1;
+    color: var(--purple-deeper);
+    margin-top: 4px;
+}
+
+.skip-btn {
+    white-space: nowrap;
+    align-self: center;
+}
+
+.preferences { 
+    max-width: 820px; 
+    margin: 32px auto; 
+    border-radius: 24px; /* Mantém o design fofinho arredondado */
+    padding: 32px;
+    background: var(--white); /* O card em si fica branco para contrastar com o fundo do site */
+    box-shadow: 0 8px 24px rgba(141, 110, 99, 0.06); /* Sombra leve usando a paleta de marrons */
+}
+
+.pref-head {
+    margin-bottom: 24px;
+}
+
+.pref-head h2 { 
+    font-family: var(--font-display); 
+    font-size: 26px; /* Um pouco maior para dar hierarquia */
+    color: var(--purple-deeper); 
+    margin-bottom: 8px; 
+    letter-spacing: -0.5px;
+}
+
+.pref-head .muted { 
+    color: var(--brown-light); 
+    font-size: 15px; 
+    line-height: 1.5;
+}
+
+.reading-form { 
+    display: grid; 
+    gap: 24px; /* Espaçamento maior respira melhor (UX) */
+}
+
+.form-group { 
+    display: block; 
+}
+
+.group-label { 
+    display: block; 
+    font-weight: 600; 
+    font-size: 15px;
+    margin-bottom: 12px; 
+    color: var(--brown-mid); 
+}
+
+/* Grid de Gêneros e Opções */
+.genres-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); 
+    gap: 12px; 
+}
+
+/* O Card de Opção ficou mais interativo e fofo */
+.option { 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center; /* Centraliza o texto para parecer um botão limpo */
+    text-align: center;
+    padding: 14px 16px; 
+    border-radius: 16px; /* Cantos arredondados fofos */
+    background: #f7f4f0; /* Fundo neutro sutil para os não selecionados */
+    border: 2px solid transparent; /* Borda invisível para evitar pulos no hover */
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Animação elástica charmosa */
+    cursor: pointer; 
+    font-size: 14px; 
+    font-weight: 500;
+    color: var(--brown); 
+    user-select: none;
+}
+
+/* Esconde o quadradinho do checkbox/radio padrão para dar estética de App Moderno */
+.option input[type="checkbox"], 
+.option input[type="radio"] { 
+    display: none; 
+}
+
+/* Efeito de flutuar ao passar o mouse */
+.option:hover { 
+    transform: translateY(-3px); 
+    background: #f1ede7;
+    box-shadow: 0 4px 12px rgba(141, 110, 99, 0.12); 
+}
+
+/* Estado selecionado - Transmite clareza visual imediata (UI) */
+.option.selected { 
+    background: rgba(142, 108, 239, 0.08); /* Fundo com tom sutil do seu roxo */
+    border-color: var(--purple-light); 
+    box-shadow: 0 4px 12px rgba(142, 108, 239, 0.15);
+}
+
+.option.selected span { 
+    color: var(--purple-deeper); 
+    font-weight: 700; 
+}
+
+/* Alinhamento de linhas (Formatos) */
+.format-row { 
+    display: flex; 
+    gap: 12px; 
+    flex-wrap: wrap; 
+}
+
+.option-inline { 
+    flex: 1; /* Faz os botões dividirem o espaço igualmente no celular */
+    min-width: 120px;
+}
+
+/* Customização charmosa do Select */
+select.bf-input { 
+    appearance: none; 
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 2px solid #eaddd3;
+    background-color: var(--white);
+    color: var(--brown);
+    font-size: 14px;
+    font-weight: 500;
+    transition: all var(--transition);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238E6CEF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); /* Seta rochosa nativa em SVG, muito mais limpa */
+    background-position: calc(100% - 16px) center; 
+    background-repeat: no-repeat;
+    background-size: 16px;
+    cursor: pointer;
+}
+
+select.bf-input:focus {
+    outline: none;
+    border-color: var(--purple-light);
+    box-shadow: 0 0 0 4px rgba(142, 108, 239, 0.15);
+}
+
+/* Rodapé de Ações */
+.form-actions { 
+    display: flex; 
+    gap: 12px; 
+    justify-content: flex-end; 
+    margin-top: 12px; 
+}
+
+/* Ajustes nos botões para combinar com o estilo */
+.bf-btn {
+    padding: 12px 24px;
+    border-radius: 14px;
+    font-weight: 600;
+    transition: all var(--transition);
+}
+.bf-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(142, 108, 239, 0.3);
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .genres-grid { 
+        grid-template-columns: 1fr 1fr; 
+        gap: 10px;
+    }
+    .preferences { 
+        margin: 12px; 
+        padding: 20px; 
+        border-radius: 20px;
+    }
+    .form-actions {
+        flex-direction: column; /* Botões empilhados no mobile facilitam o toque */
+    }
+    .form-actions .bf-btn {
+        width: 100%;
+    }
+
+    .form-topbar {
+        flex-direction: column;
+    }
+
+    .skip-btn {
+        width: 100%;
+    }
+}
+
+/* Mostrar alert animado */
+.bf-alert { 
+    text-align: center; 
+    margin: 16px 0; 
+    padding: 12px;
+    border-radius: 12px;
+    display: none;
+    opacity: 0;
+    transform: scale(0.95);
+    transition: all 0.3s ease;
+}
+
+.bf-alert.bf-visible { 
+    display: block; 
+    opacity: 1;
+    transform: scale(1);
+}
+/* Esconde as etapas que não estão ativas */
+.form-step {
+    display: none;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: all 0.4s ease;
+}
+
+/* Mostra apenas a etapa atual com um efeito suave de surgir */
+.form-step.active {
+    display: block;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Estilo para as imagens fofas dentro dos botões */
+.option {
+    flex-direction: column; /* Faz a imagem ficar EM CIMA e o texto EM BAIXO */
+    gap: 12px;
+    padding: 20px 16px; /* Mais espaçoso para caber a imagem */
+}
+
+.step-img {
+    width: 64px;  /* Tamanho perfeito para ícones/ilustrações 3D ou fofas */
+    height: 64px;
+    object-fit: contain;
+    transition: transform 0.3s var(--transition);
+}
+
+/* Microinteração: a imagem dá um pulinho quando o card é selecionado */
+.option.selected .step-img {
+    transform: scale(1.1) rotate(3deg);
+}

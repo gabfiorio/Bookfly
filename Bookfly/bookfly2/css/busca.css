@@ -111,3 +111,53 @@ body { background: var(--beige); }
 .no-results {
   text-align: center; padding: 32px; color: var(--brown-light); font-size: 14px;
 }
+
+@media (max-width: 720px) {
+  .search-bar-wrap {
+    border-radius: var(--radius-lg);
+  }
+
+  .search-main-input {
+    font-size: 15px;
+  }
+
+  .book-preview,
+  .book-result-card,
+  .user-result-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .brc-meta {
+    flex-wrap: wrap;
+  }
+
+  .sug-follow {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .search-bar-wrap,
+  .book-preview,
+  .rating-section,
+  .review-form,
+  .success-card {
+    padding: 18px;
+  }
+
+  .star-btn {
+    font-size: 38px;
+  }
+
+  .preview-cover {
+    width: 78px;
+    height: 112px;
+    font-size: 40px;
+  }
+}

@@ -12,6 +12,18 @@ const Auth = {
   setUser:  (u) => localStorage.setItem('bf_user', JSON.stringify(u)),
   clear:    () => { localStorage.removeItem('bf_token'); localStorage.removeItem('bf_user'); },
   isLogged: () => !!localStorage.getItem('bf_token'),
+  isOnboarded: () => {
+    const user = Auth.getUser();
+    const key = user?.email ? `bf_onboarded:${String(user.email).toLowerCase()}` : 'bf_onboarded';
+    return localStorage.getItem(key) === '1' || localStorage.getItem('bf_onboarded') === '1';
+  },
+  setOnboarded: (value = true) => {
+    const user = Auth.getUser();
+    const key = user?.email ? `bf_onboarded:${String(user.email).toLowerCase()}` : 'bf_onboarded';
+    if (value) localStorage.setItem(key, '1');
+    else localStorage.removeItem(key);
+  },
+  getLandingPage: () => (Auth.isOnboarded() ? 'home.html' : 'formulario.html'),
 };
 
 function requireAuth() {

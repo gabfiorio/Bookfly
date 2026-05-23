@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Personalizar Perfil</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/formulario.css"/>
+</head>
+<body>
+  <main class="page-wrap">
+    <section class="preferences bf-card">
+      <div class="form-topbar">
+        <div>
+          <p class="eyebrow">Bookfly</p>
+          <h1>Personalizar perfil</h1>
+        </div>
+        <button class="bf-btn bf-btn-ghost skip-btn" type="button">Pular por agora</button>
+      </div>
+
+      <div id="prefs-success" class="bf-alert bf-alert-success" role="status" aria-live="polite">Preferências salvas! Redirecionando…</div>
+
+      <form class="reading-form" aria-labelledby="pref-title">
+
+        <div class="form-step active" id="step-1">
+          <header class="pref-head">
+            <h2>Quais gêneros você mais gosta?</h2>
+            <p class="muted">Selecione quantos quiser. Isso ajuda a montar sua estante inicial.</p>
+          </header>
+
+          <div class="form-group">
+            <div class="genres-grid">
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="romance">
+                <img src="assets/romance.jpg" alt="Romance" class="step-img">
+                <span>Romance</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="fantasia">
+                <img src="assets/fantasia.jpg" alt="Fantasia" class="step-img">
+                <span>Fantasia / Distopia</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="terror">
+                <img src="assets/terror.jpg" alt="Terror" class="step-img">
+                <span>Terror / Dark Academia</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="ficcao">
+                <img src="assets/ficcao.jpg" alt="Ficção Científica" class="step-img">
+                <span>Ficção Científica</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="suspense">
+                <img src="assets/suspense.jpg" alt="Suspense" class="step-img">
+                <span>Suspense / Thriller</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="desenvolvimento">
+                <img src="assets/desenvolvimento.jpg" alt="Desenvolvimento" class="step-img">
+                <span>Desenvolvimento Pessoal</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="biografia">
+                <img src="assets/biografia.jpg" alt="Biografias" class="step-img">
+                <span>Biografias / História</span>
+              </label>
+              <label class="option">
+                <input class="bf-input" type="checkbox" name="genres" value="mangas">
+                <img src="assets/mangas.jpg" alt="Mangás" class="step-img">
+                <span>Mangás / HQs</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="bf-btn bf-btn-primary next-btn" type="button">Continuar ✨</button>
+          </div>
+        </div>
+
+        <div class="form-step" id="step-2">
+          <header class="pref-head">
+            <h2>Qual é o seu maior objetivo hoje?</h2>
+            <p class="muted">Queremos entender o que te move a abrir um livro neste momento.</p>
+          </header>
+
+          <div class="form-group">
+            <select id="reading-goal" name="reading_goal" class="bf-input" required>
+              <option value="" disabled selected>Selecione um objetivo</option>
+              <option value="entretenimento">Entretenimento e escapismo</option>
+              <option value="habito">Criar ou retomar o hábito de ler</option>
+              <option value="estudo">Aprender coisas novas / Crescimento profissional</option>
+              <option value="meta">Bater metas de leitura e organizar minha estante</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button class="bf-btn bf-btn-ghost prev-btn" type="button">Voltar</button>
+            <button class="bf-btn bf-btn-primary next-btn" type="button">Continuar ✨</button>
+          </div>
+        </div>
+
+        <div class="form-step" id="step-3">
+          <header class="pref-head">
+            <h2>Como é a sua rotina de leitura?</h2>
+            <p class="muted">Ajustamos o ritmo de sugestões de acordo com o seu tempo.</p>
+          </header>
+
+          <div class="form-group">
+            <div class="form-row-split" style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
+              <div style="flex: 1; min-width: 250px;">
+                <label for="frequency" class="group-label">Com que frequência você lê?</label>
+                <select id="frequency" name="frequency" class="bf-input">
+                  <option value="diario">Todos os dias</option>
+                  <option value="semanal">Algumas vezes por semana</option>
+                  <option value="mensal">Algumas vezes por mês</option>
+                  <option value="raro">Raramente / Quando sobra tempo</option>
+                </select>
+              </div>
+
+              <div style="flex: 1; min-width: 250px;">
+                <label for="books-per-year" class="group-label">Quantos livros lê por ano (média)?</label>
+                <select id="books-per-year" name="books_per_year" class="bf-input">
+                  <option value="pouco">0 a 2 livros</option>
+                  <option value="medio">3 a 5 livros</option>
+                  <option value="regular">6 a 12 livros</option>
+                  <option value="avancado">Mais de 12 livros</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button class="bf-btn bf-btn-ghost prev-btn" type="button">Voltar</button>
+            <button class="bf-btn bf-btn-primary next-btn" type="button">Continuar ✨</button>
+          </div>
+        </div>
+
+        <div class="form-step" id="step-4">
+          <header class="pref-head">
+            <h2>Suas preferências de formato</h2>
+            <p class="muted">Último passo! Escolha os tamanhos e mídias que você mais consome.</p>
+          </header>
+
+          <div class="form-group" style="margin-bottom: 24px;">
+            <label class="group-label">Qual o tamanho de livro ideal para você?</label>
+            <div class="format-row">
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="book_length" value="curto">
+                <img src="img/curto.png" alt="Curto" class="step-img">
+                <span>Curtos (Até 200 págs.)</span>
+              </label>
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="book_length" value="medio" checked>
+                <img src="img/medio.png" alt="Médio" class="step-img">
+                <span>Médios (200 a 400 págs.)</span>
+              </label>
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="book_length" value="longo">
+                <img src="img/longo.png" alt="Longo" class="step-img">
+                <span>Longos / Épicos (+400 págs.)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="group-label">Por onde você prefere consumir suas leituras?</label>
+            <div class="format-row">
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="format" value="fisico">
+                <img src="img/fisico.png" alt="Físico" class="step-img">
+                <span>Livro físico</span>
+              </label>
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="format" value="ebook">
+                <img src="img/ebook.png" alt="Ebook" class="step-img">
+                <span>E-book / Kindle</span>
+              </label>
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="format" value="audio">
+                <img src="img/audio.png" alt="Audiobook" class="step-img">
+                <span>Audiobook</span>
+              </label>
+              <label class="option option-inline">
+                <input class="bf-input" type="radio" name="format" value="hibrido" checked>
+                <img src="img/tanto-faz.png" alt="Tanto faz" class="step-img">
+                <span>Tanto faz</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top: 24px;">
+            <button class="bf-btn bf-btn-ghost prev-btn" type="button">Voltar</button>
+            <button class="bf-btn bf-btn-primary" type="submit">Configurar meu Bookfly 🚀</button>
+          </div>
+        </div>
+
+      </form>
+    </section>
+  </main>
+
+  <script src="js/utils.js"></script>
+  <script src="js/formulario.js" defer></script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-if (Auth.isLogged()) window.location.href = 'home.html';
+if (Auth.isLogged()) window.location.href = Auth.getLandingPage();
 
 async function handleLogin() {
   const email  = document.getElementById('email').value.trim();
@@ -22,7 +22,7 @@ async function handleLogin() {
     await new Promise(r => setTimeout(r, 800));
     Auth.setToken('mock-token-123');
     Auth.setUser({ id: 1, nome: 'Leitor Exemplo', email });
-    window.location.href = 'home.html';
+    window.location.href = Auth.getLandingPage();
   } catch (err) {
     alert.textContent = err.message || 'Erro ao entrar. Tente novamente.';
     alert.style.display = 'block';

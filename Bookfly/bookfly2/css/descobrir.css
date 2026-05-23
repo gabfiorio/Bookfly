@@ -106,3 +106,27 @@ body { background: var(--beige); }
 @media (max-width: 520px) {
   .books-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
+
+@media (max-width: 420px) {
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .discover-title {
+    font-size: 22px;
+  }
+
+  .genre-filters {
+    gap: 6px;
+  }
+
+  .genre-btn {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .books-grid {
+    grid-template-columns: 1fr;
+  }
+}

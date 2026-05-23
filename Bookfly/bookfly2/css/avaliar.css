@@ -161,3 +161,48 @@
 .success-title { font-family: var(--font-display); font-size: 22px; color: var(--brown); margin-bottom: 8px; }
 .success-sub   { font-size: 14px; color: var(--brown-light); margin-bottom: 24px; }
 .success-actions { display: flex; gap: 12px; justify-content: center; }
+
+@media (max-width: 640px) {
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .search-wrap,
+  .book-preview,
+  .rating-section,
+  .review-form,
+  .success-card {
+    padding: 18px;
+  }
+
+  .book-preview,
+  .success-actions {
+    flex-direction: column;
+  }
+
+  .stars-wrap {
+    gap: 6px;
+  }
+
+  .star-btn {
+    font-size: 38px;
+  }
+
+  .submit-review,
+  .success-actions .bf-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-title {
+    font-size: 22px;
+  }
+
+  .preview-cover {
+    width: 78px;
+    height: 112px;
+    font-size: 40px;
+  }
+}

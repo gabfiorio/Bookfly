@@ -1,4 +1,5 @@
-requireAuth();
+if (!Auth.isLogged()) window.location.replace('login.html');
+else if (!Auth.isOnboarded()) window.location.replace('formulario.html');
 
 const user = Auth.getUser() || { nome: 'Leitor', email: '' };
 const savedAvatar = localStorage.getItem('bf_avatar');

@@ -318,6 +318,77 @@ html.dark .carousel-book:hover {
   line-height: 1.25;
 }
 
+@media (max-width: 980px) {
+  .navbar {
+    padding: 12px 20px;
+    flex-wrap: wrap;
+  }
+
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    max-width: 760px;
+  }
+
+  .card-perfil { grid-column: 1; grid-row: 1 / 3; }
+  .card-comunidade { grid-column: 2; grid-row: 1; }
+  .card-inbox { grid-column: 2; grid-row: 2; }
+  .card-chats { grid-column: 1 / 3; grid-row: 3; }
+
+  .rating-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding-top: 92px;
+  }
+
+  .bento {
+    grid-template-columns: 1fr;
+  }
+
+  .card-perfil,
+  .card-comunidade,
+  .card-inbox,
+  .card-chats {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .rating-banner {
+    padding: 22px;
+  }
+
+  .cta-section h2 {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 420px) {
+  .navbar-actions {
+    width: 100%;
+    justify-content: stretch;
+    flex-wrap: wrap;
+  }
+
+  .navbar-actions .bf-btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .hero-logo img {
+    width: min(240px, 82vw);
+  }
+
+  .rating-banner h3 {
+    min-width: 0;
+    font-size: 17px;
+  }
+}
+
 html.dark .carousel-book {
   box-shadow: 0 4px 14px rgba(0,0,0,0.45);
 }

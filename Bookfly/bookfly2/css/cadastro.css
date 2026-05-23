@@ -41,3 +41,29 @@ h1 {
   color: rgba(46,35,24,0.55);
 }
 .back:hover { color: var(--brown); }
+
+@media (max-width: 520px) {
+  body {
+    padding: 18px 12px;
+  }
+
+  .auth-wrap {
+    max-width: 100%;
+    padding: 20px 16px;
+  }
+
+  .auth-logo {
+    width: 56px;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-size: 21px;
+    margin-bottom: 22px;
+  }
+
+  .back {
+    top: 12px;
+    left: 12px;
+  }
+}

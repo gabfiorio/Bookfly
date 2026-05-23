@@ -76,3 +76,36 @@ body { background: var(--beige); }
   color: var(--brown-light); font-size: 15px;
 }
 .notif-empty div { font-size: 40px; margin-bottom: 12px; }
+
+@media (max-width: 720px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .notif-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .notif-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 420px) {
+  .page-wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .notif-item {
+    padding: 14px;
+  }
+
+  .notif-text {
+    font-size: 13px;
+  }
+}
