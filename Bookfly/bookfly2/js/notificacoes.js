@@ -26,7 +26,7 @@ function renderNotifs(list) {
   container.innerHTML = list.map((n, i) => `
     <div class="notif-item ${n.lida ? 'read' : 'unread'}" id="notif-${n.id}" style="animation-delay:${i*0.05}s">
       <div class="notif-avatar" style="background:${n.cor}">
-        ${n.nome === 'Bookfly' ? '🦋' : initials(n.nome)}
+        ${n.nome === 'Bookfly' ? '🦉' : initials(n.nome)}
       </div>
       <div class="notif-body">
         <div class="notif-text">
