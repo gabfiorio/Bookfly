@@ -18,7 +18,6 @@ const MOCK_BOOKS = [
 
 const STAR_CAPTIONS = ['','Não gostei','Foi ok','Gostei','Muito bom!','Obra-prima! ⭐'];
 
-// ── Busca com debounce ──
 const doSearch = debounce(function() {
   const q       = document.getElementById('searchInput').value.trim().toLowerCase();
   const results = document.getElementById('searchResults');
@@ -41,7 +40,6 @@ const doSearch = debounce(function() {
     </div>`).join('');
   results.style.display = 'block';
 
-  // Carrega capas assincronamente
   filtered.forEach(b => applyCover(
     document.getElementById(`rc-${b.id}`),
     b.titulo, b.autor, b.emoji,
@@ -67,7 +65,6 @@ function selectBook(id) {
   document.getElementById('ratingSection').classList.add('visible');
   document.getElementById('reviewForm').classList.add('visible');
 
-  // Capa grande no preview
   applyCover(document.getElementById('previewCover'), book.titulo, book.autor, book.emoji,
     { width: 90, height: 130, radius: 8, fontSize: 48 });
 }
@@ -107,7 +104,6 @@ async function submitReview() {
 
   btn.disabled = true; txt.textContent = 'Publicando…'; spin.style.display = 'block';
 
-  // TODO: await apiFetch('/reviews', { method:'POST', body: JSON.stringify({ bookId: selectedBook.id, stars: selectedStars, text: reviewText }) })
   await new Promise(r => setTimeout(r, 900));
 
   document.getElementById('bookPreview').classList.remove('visible');
@@ -117,12 +113,210 @@ async function submitReview() {
   document.querySelector('.search-wrap').style.display   = 'none';
   document.querySelector('.page-title').style.display    = 'none';
   document.getElementById('successCard').classList.add('visible');
+
+  await generateShareCard(selectedBook, selectedStars, reviewText);
+}
+
+async function generateShareCard(book, stars, reviewText) {
+
+  const canvas = document.createElement('canvas');
+  canvas.width  = 1080;
+  canvas.height = 1920;
+  const ctx = canvas.getContext('2d');
+
+  const grad = ctx.createLinearGradient(0, 0, 0, 1920);
+  grad.addColorStop(0,   '#2d2b4e');
+  grad.addColorStop(0.5, '#3c3878');
+  grad.addColorStop(1,   '#1a1830');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 1080, 1920);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.025)';
+  for (let i = 0; i < 200; i++) {
+    const x = Math.random() * 1080;
+    const y = Math.random() * 1920;
+    const r = Math.random() * 2.5 + 0.5;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  await new Promise(resolve => {
+    const logoImg = new Image();
+    logoImg.onload = () => {
+      const logoSize = 90;
+      ctx.globalAlpha = 0.90;
+      ctx.drawImage(logoImg, 540 - logoSize / 2, 60, logoSize, logoSize);
+      ctx.globalAlpha = 1;
+      resolve();
+    };
+    logoImg.onerror = () => resolve();
+    logoImg.src = 'assets/lirica.png';
+  });
+
+  ctx.strokeStyle = 'rgba(134,129,189,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(200, 175);
+  ctx.lineTo(880, 175);
+  ctx.stroke();
+
+  const cardX = 80, cardY = 600, cardW = 920, cardH = 700;
+  ctx.fillStyle = 'rgba(240,236,225,0.96)';
+  roundRect(ctx, cardX, cardY, cardW, cardH, 48);
+  ctx.fill();
+
+  ctx.shadowColor = 'rgba(0,0,0,0.45)';
+  ctx.shadowBlur  = 60;
+  ctx.shadowOffsetY = 20;
+  ctx.fillStyle = 'rgba(240,236,225,0.96)';
+  roundRect(ctx, cardX, cardY, cardW, cardH, 48);
+  ctx.fill();
+  ctx.shadowColor = 'transparent';
+  ctx.shadowBlur  = 0;
+  ctx.shadowOffsetY = 0;
+
+  const coverX = 540 - 110, coverY = cardY + 60, coverW = 220, coverH = 310;
+  const coverGrad = ctx.createLinearGradient(coverX, coverY, coverX + coverW, coverY + coverH);
+  coverGrad.addColorStop(0, '#8681BD');
+  coverGrad.addColorStop(1, '#5a5594');
+  ctx.fillStyle = coverGrad;
+  roundRect(ctx, coverX, coverY, coverW, coverH, 14);
+  ctx.fill();
+
+  ctx.shadowColor = 'rgba(0,0,0,0.4)';
+  ctx.shadowBlur  = 30;
+  ctx.shadowOffsetX = 8;
+  ctx.shadowOffsetY = 12;
+  ctx.fillStyle = coverGrad;
+  roundRect(ctx, coverX, coverY, coverW, coverH, 14);
+  ctx.fill();
+  ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+  ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+
+  ctx.font = '100px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(book.emoji, 540, coverY + 190);
+
+  ctx.fillStyle = '#2e2318';
+  ctx.font = 'bold 52px serif';
+  ctx.textAlign = 'center';
+  wrapText(ctx, book.titulo, 540, cardY + 430, 800, 62);
+
+  ctx.fillStyle = '#7a6a5a';
+  ctx.font = '36px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(book.autor, 540, cardY + 530);
+
+  ctx.strokeStyle = 'rgba(134,129,189,0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cardX + 80, cardY + 565);
+  ctx.lineTo(cardX + cardW - 80, cardY + 565);
+  ctx.stroke();
+
+  const starSize = 76;
+  const starsTotal = 5;
+  const starsWidth = starsTotal * starSize + (starsTotal - 1) * 16;
+  const starsStartX = 540 - starsWidth / 2;
+  const starsY = cardY + 600;
+
+  for (let i = 0; i < 5; i++) {
+    ctx.font = `${starSize}px serif`;
+    ctx.fillStyle = i < stars ? '#F2956A' : 'rgba(0,0,0,0.12)';
+    ctx.textAlign = 'left';
+    ctx.fillText('★', starsStartX + i * (starSize + 16), starsY + starSize);
+  }
+
+  ctx.fillStyle = '#F2956A';
+  ctx.font = 'bold 48px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`${stars}/5`, 540, cardY + 700);
+
+  if (reviewText) {
+    ctx.fillStyle = 'rgba(46,35,24,0.65)';
+    ctx.font = 'italic 34px serif';
+    ctx.textAlign = 'center';
+    const shortReview = reviewText.length > 100 ? reviewText.slice(0, 97) + '…' : reviewText;
+    wrapText(ctx, `"${shortReview}"`, 540, cardY + 780, 820, 46);
+  }
+
+  ctx.fillStyle = '#8681BD';
+  roundRect(ctx, 540 - 155, cardY - 30, 310, 60, 30);
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 28px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('📚 li esse livro', 540, cardY + 10);
+
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '32px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('bookfly.app • sua estante virtual', 540, 1820);
+
+  const dataUrl = canvas.toDataURL('image/png');
+  const img = document.getElementById('sharePreviewImg');
+  if (img) {
+    img.src = dataUrl;
+    img.dataset.filename = `bookfly-${book.titulo.replace(/\s+/g, '-').toLowerCase()}.png`;
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+  const words = text.split(' ');
+  let line = '';
+  let currentY = y;
+  for (const word of words) {
+    const testLine  = line + word + ' ';
+    const metrics   = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && line !== '') {
+      ctx.fillText(line.trim(), x, currentY);
+      line = word + ' ';
+      currentY += lineHeight;
+    } else {
+      line = testLine;
+    }
+  }
+  if (line.trim()) ctx.fillText(line.trim(), x, currentY);
+}
+
+function downloadShareCard() {
+  const img = document.getElementById('sharePreviewImg');
+  if (!img?.src) return;
+  const a = document.createElement('a');
+  a.href     = img.src;
+  a.download = img.dataset.filename || 'bookfly-avaliacao.png';
+  a.click();
+  showToast('Imagem salva! Agora é só postar no Instagram 📸');
+}
+
+function openInstagram() {
+  downloadShareCard();
+  setTimeout(() => {
+    window.open('https://www.instagram.com/', '_blank');
+  }, 600);
 }
 
 function resetForm() {
   selectedBook = null; selectedStars = 0;
   document.getElementById('searchInput').value = '';
   document.getElementById('reviewText').value  = '';
+  const shareSection = document.getElementById('shareSection');
+  if (shareSection) shareSection.classList.remove('visible');
   updateStars(0); updateCharCount();
 }
 
@@ -130,7 +324,6 @@ document.addEventListener('click', e => {
   if (!e.target.closest('.search-wrap')) document.getElementById('searchResults').style.display = 'none';
 });
 
-// Init theme toggle icon
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('themeToggleBtn');
   if (btn) renderThemeToggle(btn);
