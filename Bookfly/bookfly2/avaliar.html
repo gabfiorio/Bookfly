@@ -6,6 +6,7 @@
   <title>Bookfly — Avaliar livro</title>
   <link rel="stylesheet" href="css/base.css"/>
   <link rel="stylesheet" href="css/avaliar.css"/>
+  <link rel="stylesheet" href="css/avaliar_share.css"/>
 </head>
 <body>
 
@@ -66,12 +67,22 @@
     </button>
 
     <div class="success-card" id="successCard">
-      <div class="success-emoji">🎉</div>
-      <div class="success-title">Avaliação publicada!</div>
-      <div class="success-sub">Sua avaliação foi compartilhada com a comunidade.</div>
-      <div class="success-actions">
-        <a href="home.html"   class="bf-btn bf-btn-primary">Ver feed</a>
-        <a href="avaliar.html" class="bf-btn bf-btn-ghost" onclick="resetForm()">Avaliar outro</a>
+      <div class="success-left">
+        <img id="sharePreviewImg" class="share-preview-img" alt="Card de avaliação" />
+      </div>
+      <div class="success-right">
+        <div class="success-emoji">🎉</div>
+        <div class="success-title">Avaliação publicada!</div>
+        <div class="success-sub">Sua avaliação foi compartilhada com a comunidade.</div>
+        <div class="success-actions">
+          <a href="home.html" class="bf-btn bf-btn-primary">Ver feed</a>
+          <a href="avaliar.html" class="bf-btn bf-btn-ghost" onclick="resetForm()">Avaliar outro</a>
+          <button class="bf-btn share-btn-download" onclick="downloadShareCard()">⬇ Salvar imagem</button>
+          <button class="bf-btn share-btn-insta" onclick="openInstagram()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            Abrir Instagram
+          </button>
+        </div>
       </div>
     </div>
 
