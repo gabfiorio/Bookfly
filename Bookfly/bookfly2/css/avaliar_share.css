@@ -1,0 +1,93 @@
+.success-card {
+  background: var(--beige-card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+  display: none;
+  animation: scaleIn 0.4s ease both;
+  gap: 28px;
+  align-items: center;
+}
+.success-card.visible { display: flex; }
+
+.success-left { flex-shrink: 0; }
+.share-preview-img {
+width: 260px;
+height: 462px;
+  border-radius: 12px;
+  object-fit: cover;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+  border: 2.5px solid var(--purple-light);
+  display: block;
+}
+
+.success-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.success-emoji { font-size: 36px; line-height: 1; }
+.success-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--brown);
+}
+.success-sub {
+  font-size: 13px;
+  color: var(--brown-light);
+  margin-bottom: 8px;
+}
+
+.success-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.success-actions .bf-btn {
+  justify-content: center;
+  font-size: 13px;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+.share-btn-download {
+  background: var(--beige-dark);
+  color: var(--brown);
+  border: 1.5px solid var(--beige-dark);
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+}
+.share-btn-download:hover {
+  background: var(--purple-xlight);
+  transform: scale(1.03);
+}
+
+.share-btn-insta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  color: white;
+  border: none;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform var(--transition);
+  box-shadow: 0 3px 12px rgba(220,39,67,0.3);
+}
+.share-btn-insta:hover {
+  opacity: 0.92;
+  transform: scale(1.03);
+}
+
+@media (max-width: 520px) {
+  .success-card { flex-direction: column; text-align: center; }
+  .success-actions { grid-template-columns: 1fr; }
+  .share-preview-img { width: 140px; height: 249px; }
+}
