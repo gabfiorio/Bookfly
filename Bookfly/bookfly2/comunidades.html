@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Comunidades</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/comunidades.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="busca.html"          class="topnav-icon-btn" title="Buscar">🔍</a>
+    <a href="comunidades.html"    class="topnav-icon-btn active" title="Comunidades">👥</a>
+    <a href="notificacoes.html"   class="topnav-icon-btn topnav-notif-wrap" title="Notificações">
+      🔔<span class="bf-notif-dot"></span>
+    </a>
+    <a href="perfil.html" id="navAvatar" class="topnav-avatar" title="Meu perfil"></a>
+    <button onclick="logout()" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">Sair</button>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="page-header">
+      <h1 class="page-title">Comunidades 👥</h1>
+      <p class="page-subtitle">Encontre leitores com os mesmos gostos que você</p>
+    </div>
+
+    <div class="top-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input
+          id="searchInput"
+          class="search-main-input"
+          type="text"
+          placeholder="Buscar comunidade…"
+          autocomplete="off"
+        />
+      </div>
+      <button class="bf-btn bf-btn-primary" onclick="openCreateModal()">+ Criar comunidade</button>
+    </div>
+
+    <div class="genre-filters" id="genreFilters">
+      <button class="genre-btn active" data-genre="all" onclick="filterGenre(this)">Todas</button>
+      <button class="genre-btn" data-genre="minhas"        onclick="filterGenre(this)">Minhas</button>
+      <button class="genre-btn" data-genre="Romance"       onclick="filterGenre(this)">Romance</button>
+      <button class="genre-btn" data-genre="Fantasia"      onclick="filterGenre(this)">Fantasia</button>
+      <button class="genre-btn" data-genre="Ficção Científica" onclick="filterGenre(this)">Ficção Científica</button>
+      <button class="genre-btn" data-genre="Terror"        onclick="filterGenre(this)">Terror</button>
+      <button class="genre-btn" data-genre="Mangás"        onclick="filterGenre(this)">Mangás</button>
+      <button class="genre-btn" data-genre="Clássicos"     onclick="filterGenre(this)">Clássicos</button>
+      <button class="genre-btn" data-genre="Não-ficção"    onclick="filterGenre(this)">Não-ficção</button>
+    </div>
+
+    <div class="comm-layout">
+      <div>
+        <div class="communities-list" id="commList">
+        </div>
+      </div>
+
+      <aside class="sidebar">
+
+        <div class="sidebar-card">
+          <h4>Minhas comunidades</h4>
+          <div class="meus-grupos" id="myGroupsList">
+            <p class="mg-empty">Você ainda não entrou em nenhuma comunidade.</p>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <h4>🔥 Em alta agora</h4>
+          <div class="trending-list" id="trendingList">
+            <!-- Renderizado via JS -->
+          </div>
+        </div>
+
+        <div class="sidebar-cta">
+          <h4>✨ Crie a sua!</h4>
+          <p>Reúna leitores com interesses em comum e comece uma nova comunidade.</p>
+          <button class="bf-btn bf-btn-primary" style="width:100%;justify-content:center;" onclick="openCreateModal()">
+            + Criar comunidade
+          </button>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <div id="bf-modal-overlay" style="display:none;">
+    <div class="bf-modal bf-modal-md" id="bf-modal-box">
+      <div class="bf-modal-header">
+        <h3 class="bf-modal-title" id="bf-modal-title">Nova comunidade</h3>
+        <button class="bf-modal-close" id="bf-modal-close-btn" aria-label="Fechar">×</button>
+      </div>
+      <div class="bf-modal-body" id="bf-modal-body"></div>
+      <div class="bf-modal-footer" id="bf-modal-footer"></div>
+    </div>
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/comunidades.js"></script>
+</body>
+</html>
