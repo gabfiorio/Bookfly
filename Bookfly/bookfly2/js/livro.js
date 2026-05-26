@@ -59,6 +59,10 @@ const MOCK_READERS = {
 const params = new URLSearchParams(window.location.search);
 const bookId = parseInt(params.get('id')) || 1;
 const book   = BOOKS_DB[bookId];
+let SHELVES = LibraryData.getShelves();
+const SHELF_STATUS = ['Nenhuma', 'Quero ler', 'Lendo', 'Lido'];
+let userStatus = 0; // índice no array acima
+let REVIEW_STARS = 5;
 
 if (!book) {
   document.getElementById('pageWrap').innerHTML = `
@@ -71,11 +75,45 @@ if (!book) {
   renderBook();
 }
 
-const SHELF_STATUS = ['Nenhuma', 'Quero ler', 'Lendo', 'Lido'];
-let userStatus = 0; // índice no array acima
+function shelfBookPayload() {
+  return {
+    id: bookId,
+    titulo: book.titulo,
+    autor: book.autor,
+    emoji: book.emoji,
+    genero: book.genero,
+    stars: null,
+  };
+}
+
+function removeBookFromAllShelves() {
+  Object.keys(SHELVES).forEach((key) => {
+    SHELVES[key] = (SHELVES[key] || []).filter((b) => b.id !== bookId);
+  });
+}
+
+function applyStatusToShelves(statusIdx) {
+  removeBookFromAllShelves();
+  const payload = shelfBookPayload();
+
+  if (statusIdx === 1) SHELVES.quererlev.push(payload);
+  if (statusIdx === 2) SHELVES.lendo.push({ ...payload, pagina: 0, total: book.paginas || null });
+  if (statusIdx === 3) SHELVES.lidos.push(payload);
+
+  LibraryData.setShelves(SHELVES);
+}
+
+function syncStatusFromShelves() {
+  SHELVES = LibraryData.getShelves();
+  if ((SHELVES.lidos || []).some((b) => b.id === bookId)) userStatus = 3;
+  else if ((SHELVES.lendo || []).some((b) => b.id === bookId)) userStatus = 2;
+  else if ((SHELVES.quererlev || []).some((b) => b.id === bookId)) userStatus = 1;
+  else userStatus = 0;
+}
 
 function renderBook() {
   document.title = `Bookfly — ${book.titulo}`;
+  syncStatusFromShelves();
 
   document.getElementById('heroCover').innerHTML = coverHtml(null, book.emoji, { width: 120, height: 174, radius: 10, fontSize: 64 });
   document.getElementById('heroTitle').textContent  = book.titulo;
@@ -109,7 +147,7 @@ function renderShelfActions() {
         </button>
         <button class="shelf-status-arrow" onclick="openStatusMenu()" aria-label="Mudar status">▾</button>
       </div>
-      <a href="avaliar.html?id=${bookId}" class="bf-btn bf-btn-ghost shelf-action-btn">⭐ Avaliar</a>
+      <button class="bf-btn bf-btn-ghost shelf-action-btn" onclick="addBookToFolder()">🗂️ Adicionar à pasta</button>
     </div>`;
 }
 
@@ -119,6 +157,7 @@ function shelfStatusIcon() {
 
 function cycleStatus() {
   userStatus = (userStatus + 1) % SHELF_STATUS.length;
+  applyStatusToShelves(userStatus);
   renderShelfActions();
   showToast(userStatus === 0 ? 'Removido da estante' : `Marcado como: ${SHELF_STATUS[userStatus]}`);
 }
@@ -138,13 +177,77 @@ function openStatusMenu() {
 
 function setStatus(idx) {
   userStatus = idx;
+  applyStatusToShelves(idx);
   document.getElementById('bf-modal-overlay')?.remove();
   renderShelfActions();
   showToast(idx === 0 ? 'Removido da estante' : `Marcado como: ${SHELF_STATUS[idx]}`);
 }
 
+function addBookToFolder() {
+  const folders = LibraryData.getFolders();
+  if (!folders.length) {
+    showToast('Crie uma pasta no Perfil primeiro.', 'error');
+    return;
+  }
+
+  openModal({
+    title: '🗂️ Adicionar livro à pasta',
+    size: 'sm',
+    body: `
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${folders.map((f) => `
+          <button class="status-menu-item" onclick="confirmAddBookToFolder('${f.id}')">
+            <span>${f.type === 'autor' ? '✍️' : '📚'}</span>
+            ${escapeHtml(f.name)}
+          </button>`).join('')}
+      </div>`,
+    buttons: [],
+  });
+}
+
+function confirmAddBookToFolder(folderId) {
+  const ok = LibraryData.addBookToFolder(bookId, folderId);
+  document.getElementById('bf-modal-overlay')?.remove();
+  if (!ok) {
+    showToast('Não foi possível adicionar à pasta.', 'error');
+    return;
+  }
+  showToast('Livro adicionado à pasta!');
+}
+
+function getCommunityReviews() {
+  const base = (MOCK_REVIEWS[bookId] || []).map((r) => ({ ...r, source: 'mock' }));
+  const custom = LibraryData.getBookComments(bookId).map((r) => ({ ...r, source: 'custom' }));
+  return [...custom, ...base];
+}
+
+function submitBookComment() {
+  const input = document.getElementById('newReviewText');
+  const text = input?.value.trim();
+  const stars = REVIEW_STARS;
+  if (!text) {
+    showToast('Escreva um comentário antes de publicar.', 'error');
+    return;
+  }
+
+  const me = Auth.getUser() || { nome: 'Leitor' };
+  LibraryData.addBookComment(bookId, {
+    id: Date.now(),
+    nome: me.nome,
+    cor: AVATAR_COLORS[0],
+    stars: isNaN(stars) ? 5 : stars,
+    texto: text,
+    data: new Date().toISOString(),
+    curtidas: 0,
+  });
+
+  input.value = '';
+  renderReviews();
+  showToast('Comentário publicado!');
+}
+
 function renderReviews() {
-  const reviews = MOCK_REVIEWS[bookId] || [];
+  const reviews = getCommunityReviews();
   const total   = reviews.length;
   const avg     = total ? (reviews.reduce((s, r) => s + r.stars, 0) / total).toFixed(1) : '-';
 
@@ -169,7 +272,29 @@ function renderReviews() {
         </div>`).join('')}
     </div>`;
 
-  document.getElementById('reviewsList').innerHTML = reviews.length
+  document.getElementById('reviewsList').innerHTML = `
+    <div class="review-composer">
+      <h4>Deixe seu comentário</h4>
+      <div class="review-composer-row">
+        <div class="review-star-picker" role="radiogroup" aria-label="Escolha a nota">
+          ${[1,2,3,4,5].map((stars) => `
+            <button
+              type="button"
+              data-stars="${stars}"
+              class="review-star-btn ${stars <= REVIEW_STARS ? 'active' : ''}"
+              onclick="selectReviewStars(${stars})"
+              onmouseover="previewReviewStars(${stars})"
+              onmouseout="previewReviewStars(REVIEW_STARS)"
+              aria-label="${stars} estrela${stars > 1 ? 's' : ''}"
+              aria-pressed="${stars <= REVIEW_STARS ? 'true' : 'false'}"
+            >★</button>`).join('')}
+        </div>
+        <div class="review-star-caption" id="reviewStarCaption">${REVIEW_STARS} de 5 estrelas</div>
+      </div>
+      <textarea id="newReviewText" class="review-compose-input" maxlength="500" placeholder="Escreva seu comentário sobre este livro..."></textarea>
+      <button class="bf-btn bf-btn-primary review-publish-btn" onclick="submitBookComment()">Publicar comentário</button>
+    </div>
+    ${reviews.length
     ? reviews.map((r, i) => `
         <div class="review-card" style="animation-delay:${i*0.06}s">
           <div class="review-header">
@@ -185,8 +310,27 @@ function renderReviews() {
             ♡ <span>${r.curtidas}</span>
           </button>
         </div>`).join('')
-    : `<div class="empty-state"><div>💬</div><p>Seja o primeiro a avaliar este livro!</p>
-       <a href="avaliar.html?id=${bookId}" class="bf-btn bf-btn-primary" style="margin-top:12px;display:inline-flex">Avaliar agora</a></div>`;
+    : `<div class="empty-state"><div>💬</div><p>Seja o primeiro a comentar este livro!</p></div>`}`;
+}
+
+function syncReviewStarsPicker(activeStars = REVIEW_STARS) {
+  document.querySelectorAll('.review-star-btn').forEach((btn) => {
+    const stars = parseInt(btn.dataset.stars || '0', 10);
+    const isActive = stars <= activeStars;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+  });
+  const caption = document.getElementById('reviewStarCaption');
+  if (caption) caption.textContent = `${activeStars} de 5 estrelas`;
+}
+
+function selectReviewStars(stars) {
+  REVIEW_STARS = stars;
+  syncReviewStarsPicker(stars);
+}
+
+function previewReviewStars(stars) {
+  syncReviewStarsPicker(stars);
 }
 
 function likeReview(btn, base) {

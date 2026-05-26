@@ -104,6 +104,26 @@ body { background: var(--beige); }
 
 /* ── Responsive ── */
 @media (max-width: 520px) {
+  .topnav {
+    padding: 8px 12px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 58px;
+  }
+
+  .topnav-logo { height: 22px; }
+
+  .topnav-spacer { display: none; }
+
+  .topnav-link,
+  .topnav .bf-btn,
+  .topnav-icon-btn {
+    width: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .books-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 

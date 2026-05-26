@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!form) return;
 
     const skipBtn = document.querySelector('.skip-btn');
+    const success = document.getElementById('prefs-success');
 
     function finishOnboarding() {
         Auth.setOnboarded(true);
@@ -120,8 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
             book_length: formData.get('book_length'),
             format: formData.get('format')
         };
-
-        const success = document.getElementById('prefs-success');
 
         // Se não há API configurada, apenas mostra o alerta e redireciona
         if (!API_URL) {

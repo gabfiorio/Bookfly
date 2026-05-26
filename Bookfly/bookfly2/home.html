@@ -10,13 +10,15 @@
 <body>
 
   <nav class="topnav">
-    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <a href="home.html" class="topnav-brand" title="Início">
+      <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    </a>
     <div class="topnav-spacer"></div>
     <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
-    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="comunidade.html" class="topnav-icon-btn" title="Comunidade">👥</a>
     <a href="busca.html" class="topnav-icon-btn" title="Buscar">🔍</a>
-    <a href="comunidades.html"  class="topnav-icon-btn" title="Comunidades">👥</a>
     <a href="notificacoes.html" class="topnav-icon-btn topnav-notif-wrap" title="Notificações">🔔<span class="bf-notif-dot"></span></a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
     <a href="perfil.html" id="navAvatar" class="topnav-avatar" title="Meu perfil"></a>
     <button onclick="logout()" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">
       Sair
@@ -57,10 +59,6 @@
         <h4>Leitores para seguir</h4>
         <div id="suggestedUsers"></div>
       </div>
-
-      <a href="avaliar.html" class="btn-avaliar-livros">
-        ⭐ Avaliar um livro
-      </a>
 
       <div class="sidebar-card sidebar-challenge">
         <div class="sc-header">

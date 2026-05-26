@@ -6,10 +6,12 @@ const savedAvatar = localStorage.getItem('bf_avatar');
 
 // Nav avatar
 const navAvatarEl = document.getElementById('navAvatar');
-if (savedAvatar) {
-  navAvatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
-} else {
-  navAvatarEl.textContent = initials(user.nome);
+if (navAvatarEl) {
+  if (savedAvatar) {
+    navAvatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
+  } else {
+    navAvatarEl.textContent = initials(user.nome);
+  }
 }
 
 // Composer avatar

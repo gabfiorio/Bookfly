@@ -266,9 +266,19 @@ a.post-book-tag:hover { background: var(--purple-light); }
 
 @media (max-width: 720px) {
   .topnav {
-    padding: 10px 14px;
-    flex-wrap: wrap;
-    height: auto;
+    padding: 8px 12px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 58px;
+  }
+
+  .topnav-logo { height: 22px; }
+
+  .topnav .bf-btn {
+    width: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .topnav-spacer {
@@ -305,7 +315,7 @@ a.post-book-tag:hover { background: var(--purple-light); }
 
 @media (max-width: 520px) {
   .layout {
-    padding-top: 92px;
+    padding-top: 86px;
   }
 
   .composer-avatar,

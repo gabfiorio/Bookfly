@@ -113,6 +113,25 @@ body { background: var(--beige); }
 }
 
 @media (max-width: 720px) {
+  .topnav {
+    padding: 8px 12px;
+    gap: 10px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    height: 58px;
+  }
+
+  .topnav-logo { height: 22px; }
+
+  .topnav-spacer { display: none; }
+
+  .topnav-link,
+  .topnav .bf-btn {
+    width: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
   .search-bar-wrap {
     border-radius: var(--radius-lg);
   }
