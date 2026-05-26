@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Comunidade</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/comunidade.css"/>
+</head>
+<body>
+
+  <nav class="topnav">
+    <a href="home.html" class="topnav-brand" title="Início">
+      <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    </a>
+    <div class="topnav-spacer"></div>
+    <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <a href="comunidade.html" class="topnav-icon-btn" title="Comunidade">👥</a>
+    <a href="busca.html" class="topnav-icon-btn" title="Buscar">🔍</a>
+    <a href="notificacoes.html" class="topnav-icon-btn topnav-notif-wrap" title="Notificações">🔔<span class="bf-notif-dot"></span></a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <a href="home.html" class="bf-btn bf-btn-ghost topnav-link">← Feed</a>
+  </nav>
+
+  <main class="page-wrap">
+    <section class="community-hero bf-card">
+      <h1>👥 Comunidade Bookfly</h1>
+      <p>Este espaço vai reunir clubes de leitura, discussões por gênero, desafios coletivos e recomendações da galera.</p>
+      <div class="community-actions">
+        <a href="home.html" class="bf-btn bf-btn-primary">Ver feed</a>
+        <a href="descobrir.html" class="bf-btn bf-btn-ghost">Descobrir livros</a>
+      </div>
+    </section>
+
+    <section class="community-grid">
+      <article class="community-card bf-card">
+        <h2>Clubes de Leitura</h2>
+        <p>Encontre grupos por tema e acompanhe leituras em conjunto.</p>
+      </article>
+      <article class="community-card bf-card">
+        <h2>Discussões</h2>
+        <p>Converse sobre livros, personagens e teorias com outros leitores.</p>
+      </article>
+      <article class="community-card bf-card">
+        <h2>Eventos</h2>
+        <p>Participe de maratonas, metas coletivas e encontros da comunidade.</p>
+      </article>
+    </section>
+  </main>
+
+  <section class="clubs-section">
+ 
+      <div class="clubs-header">
+        <h2>📚 Clubes de Leitura</h2>
+        <button class="btn-criar-clube" onclick="abrirModal()">
+          ＋ Criar clube
+        </button>
+      </div>
+ 
+      <div class="clubs-filters">
+        <button class="filter-pill active" onclick="setFiltro('todos', this)">Todos</button>
+        <button class="filter-pill" onclick="setFiltro('abertos', this)">Abertos</button>
+        <button class="filter-pill" onclick="setFiltro('participando', this)">Participando</button>
+        <button class="filter-pill" onclick="setFiltro('fantasia', this)">Fantasia</button>
+        <button class="filter-pill" onclick="setFiltro('classicos', this)">Clássicos</button>
+        <button class="filter-pill" onclick="setFiltro('ficcao', this)">Ficção científica</button>
+      </div>
+ 
+      <div class="clubs-grid" id="clubsGrid"></div>
+ 
+    </section>
+  </main>
+ 
+  <!-- ── Modal criar clube ── -->
+  <div class="modal-overlay" id="modalOverlay" onclick="fecharModalFora(event)">
+    <div class="modal-box">
+      <p class="modal-titulo">Criar novo clube</p>
+ 
+      <label>Nome do clube</label>
+      <input type="text" id="newNome" placeholder="Ex: Leitores de Saramago"/>
+ 
+      <label>Tema / gênero</label>
+      <select id="newGenero">
+        <option value="fantasia">Fantasia</option>
+        <option value="classicos">Clássicos</option>
+        <option value="ficcao">Ficção científica</option>
+        <option value="romance">Romance</option>
+        <option value="terror">Terror</option>
+        <option value="autoajuda">Autoajuda</option>
+      </select>
+ 
+      <label>Livro atual (opcional)</label>
+      <input type="text" id="newLivro" placeholder="Ex: O Nome da Rosa"/>
+ 
+      <label>Descrição</label>
+      <textarea id="newDesc" placeholder="Sobre o que é este clube?"></textarea>
+ 
+      <label>Acesso</label>
+      <select id="newAcesso">
+        <option value="aberto">Aberto — qualquer pessoa pode entrar</option>
+        <option value="fechado">Fechado — precisa de aprovação</option>
+      </select>
+ 
+      <div class="modal-acoes">
+        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-salvar" onclick="criarClube()">Criar clube</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/tema.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/comunidade.js"></script>
+</body>
+</html>

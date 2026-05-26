@@ -10,9 +10,14 @@
 <body>
 
   <nav class="topnav">
-    <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    <a href="home.html" class="topnav-brand" title="Início">
+      <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    </a>
     <div class="topnav-spacer"></div>
     <a href="descobrir.html" class="topnav-icon-btn" title="Descobrir livros">🧭</a>
+    <a href="comunidade.html" class="topnav-icon-btn" title="Comunidade">👥</a>
+    <a href="busca.html" class="topnav-icon-btn" title="Buscar">🔍</a>
+    <a href="notificacoes.html" class="topnav-icon-btn topnav-notif-wrap" title="Notificações">🔔<span class="bf-notif-dot"></span></a>
     <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
     <a href="home.html" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">← Feed</a>
     <button onclick="logout()" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:7px 16px;">Sair</button>
@@ -41,6 +46,7 @@
         <div class="profile-actions">
           <a href="avaliar.html" class="bf-btn bf-btn-primary" style="font-size:13px;padding:9px 20px;">⭐ Avaliar livro</a>
           <a href="desafio.html" class="bf-btn bf-btn-ghost"   style="font-size:13px;padding:9px 20px;">🎯 Desafio</a>
+          <a href="formulario.html" class="bf-btn bf-btn-ghost" style="font-size:13px;padding:9px 20px;">📝 Refazer formulário</a>
           <button class="bf-btn bf-btn-ghost" style="font-size:13px;padding:9px 20px;" onclick="editProfile()">Editar perfil</button>
         </div>
       </div>
@@ -52,6 +58,7 @@
       <button class="tab-btn" onclick="switchTab('lendo', this)">📖 Lendo</button>
       <button class="tab-btn" onclick="switchTab('quererlev', this)">🔖 Quero ler</button>
       <button class="tab-btn" onclick="switchTab('avaliados', this)">⭐ Avaliados</button>
+      <button class="tab-btn" onclick="switchTab('pastas', this)">🗂️ Pastas</button>
     </div>
 
     <div class="tab-pane active" id="tab-posts">
@@ -76,6 +83,22 @@
     <div class="tab-pane" id="tab-avaliados">
       <div class="shelf-grid" id="shelf-avaliados"></div>
       <button class="add-book-btn" onclick="window.location.href='avaliar.html'">+ Avaliar novo livro</button>
+    </div>
+
+    <div class="tab-pane" id="tab-pastas">
+      <div class="folders-toolbar">
+        <div class="folders-mode" role="tablist" aria-label="Tipo de pasta">
+          <button class="folder-mode-btn active" onclick="setFolderMode('todas', this)">🗂️ Todas</button>
+          <button class="folder-mode-btn" onclick="setFolderMode('genero', this)">📚 Gênero</button>
+          <button class="folder-mode-btn" onclick="setFolderMode('autor', this)">✍️ Autor</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="bf-btn bf-btn-primary folders-refresh" onclick="createFolder()">+ Nova pasta</button>
+          <button class="bf-btn bf-btn-ghost folders-refresh" onclick="renderFolders()">Atualizar</button>
+        </div>
+      </div>
+      <div id="foldersGrid" class="folders-grid"></div>
+      <div id="folderDetail" class="folder-detail" style="display:none"></div>
     </div>
 
   </div>
