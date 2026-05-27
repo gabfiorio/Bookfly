@@ -44,8 +44,8 @@ const Auth = {
   isOnboarded: () => {
     const user = Auth.getUser();
 
-    const key = user?.email
-      ? `bf_onboarded:${String(user.email).toLowerCase()}`
+    const key = user?.username
+      ? `bf_onboarded:${String(user.username).toLowerCase()}`
       : 'bf_onboarded';
 
     return (
@@ -57,8 +57,8 @@ const Auth = {
   setOnboarded: (value = true) => {
     const user = Auth.getUser();
 
-    const key = user?.email
-      ? `bf_onboarded:${String(user.email).toLowerCase()}`
+    const key = user?.username
+      ? `bf_onboarded:${String(user.username).toLowerCase()}`
       : 'bf_onboarded';
 
     if (value) {

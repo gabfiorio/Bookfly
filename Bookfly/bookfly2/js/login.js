@@ -4,47 +4,70 @@ if (Auth.isLogged()) {
 
 async function handleLogin() {
 
-  const Username = document.getElementById('Username')?.value.trim();
-  const senha = document.getElementById('senha')?.value;
+  const identificador =
+    document.getElementById('username')?.value.trim();
 
-  const alertEl = document.getElementById('alertMsg');
-  const btn = document.getElementById('submitBtn');
-  const txt = document.getElementById('btnText');
-  const spin = document.getElementById('spinner');
+  const senha =
+    document.getElementById('senha')?.value;
 
-  if (!Username || !senha) {
-    alertEl.textContent = 'Preencha todos os campos.';
+  const alertEl =
+    document.getElementById('alertMsg');
+
+  const btn =
+    document.getElementById('submitBtn');
+
+  const txt =
+    document.getElementById('btnText');
+
+  const spin =
+    document.getElementById('spinner');
+
+  if (!identificador || !senha) {
+
+    alertEl.textContent =
+      'Preencha todos os campos.';
+
     alertEl.style.display = 'block';
+
     return;
   }
 
   alertEl.style.display = 'none';
 
   btn.disabled = true;
+
   txt.textContent = 'Entrando...';
+
   spin.style.display = 'block';
 
   try {
 
+    const login = identificador.includes('@')
+      ? { email: identificador, senha }
+      : { username: identificador, senha };
+
     const response = await apiFetch('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({
-        Username,
-        senha
-      }),
+
+      body: JSON.stringify(login),
     });
 
     if (!response) {
-      throw new Error('Servidor indisponível.');
+      throw new Error(
+        'Servidor indisponível.'
+      );
     }
 
-    const data = await response.json().catch(() => ({}));
+    const data =
+      await response.json()
+        .catch(() => ({}));
 
     if (!response.ok) {
+
       throw new Error(
         data.message ||
         data.erro ||
-        'Erro ao entrar. Verifique seus dados.'
+        'Usuário ou senha inválidos.'
       );
     }
 
@@ -52,29 +75,31 @@ async function handleLogin() {
       data.token ||
       data.accessToken ||
       data.access_token;
-// pegar o usuário do response.
+
     const user =
       data.user ||
       data.usuario || {
-        id: data.id || 1,
-
-        username:
-          data.username ||
-          data.user?.username ||
-          'Usuário',
+        username: identificador
       };
 
     if (!token) {
-      throw new Error('Token não retornado pelo servidor.');
+      throw new Error(
+        'Token não retornado pelo servidor.'
+      );
     }
 
     Auth.setToken(token);
     Auth.setUser(user);
 
-    showToast('Login realizado com sucesso!');
+    showToast(
+      'Login realizado com sucesso!'
+    );
 
     setTimeout(() => {
-      window.location.href = Auth.getLandingPage();
+
+      window.location.href =
+        Auth.getLandingPage();
+
     }, 800);
 
   } catch (err) {
@@ -82,20 +107,23 @@ async function handleLogin() {
     console.error(err);
 
     alertEl.textContent =
-      err.message || 'Erro ao entrar.';
+      err.message ||
+      'Erro ao entrar.';
 
     alertEl.style.display = 'block';
 
   } finally {
 
     btn.disabled = false;
-    txt.textContent = 'Entrar';
-    spin.style.display = 'none';
 
+    txt.textContent = 'Entrar';
+
+    spin.style.display = 'none';
   }
 }
 
 document.addEventListener('keydown', (e) => {
+
   if (e.key === 'Enter') {
     handleLogin();
   }
