@@ -3,7 +3,12 @@
    Utilitários compartilhados entre todas as páginas
    ============================================================ */
 
-const API_BASE = 'https://sua-api.com';
+const API_BASE = window.BOOKFLY_API_BASE || 'https://bookfly-wp02.onrender.com';
+const API_ENDPOINTS = window.BOOKFLY_API_ENDPOINTS || {
+  onboarding: '/api/exemplo',
+  login: 'https://bookfly-wp02.onrender.com/auth/login',
+  cadastro: 'https://bookfly-wp02.onrender.com/usuarios',
+};
 
 const Auth = {
   getToken: () => localStorage.getItem('bf_token'),
@@ -30,9 +35,11 @@ function requireAuth() {
   if (!Auth.isLogged()) window.location.href = 'login.html';
 }
 
+// Wrapper para fetch que já inclui a base da API e o token de autenticação 
 async function apiFetch(path, options = {}) {
   const token = Auth.getToken();
-  const res = await fetch(`${API_BASE}${path}`, {
+  const url = 'https://bookfly-wp02.onrender.com/usuarios';
+  const res = await fetch(url, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
@@ -40,6 +47,7 @@ async function apiFetch(path, options = {}) {
       ...(options.headers || {}),
     },
   });
+  console.log('API Request:', url, options);
   if (res.status === 401) { Auth.clear(); window.location.href = 'login.html'; return; }
   return res;
 }
