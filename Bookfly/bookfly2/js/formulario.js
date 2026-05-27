@@ -4,9 +4,8 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // URL da sua API na Vercel (idealmente vinda de configuração ou espelhada localmente)
-    // Substitua pela URL real do seu back-end na Vercel
-    const API_URL = ''; 
+    // Ajuste apenas a base/rotas em js/utils.js; aqui usamos o endpoint do formulário.
+    const API_ENDPOINT = API_ENDPOINTS.onboarding;
 
     // Marca visualmente labels cujos inputs estão selecionados
     function syncOptions(container) {
@@ -122,21 +121,13 @@ document.addEventListener('DOMContentLoaded', function () {
             format: formData.get('format')
         };
 
-        // Se não há API configurada, apenas mostra o alerta e redireciona
-        if (!API_URL) {
-            if (success) success.classList.add('bf-visible');
-            setTimeout(finishOnboarding, 900);
-            return;
-        }
-
         try {
-            const response = await fetch(API_URL, {
+            const response = await apiFetch(API_ENDPOINT, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
             });
 
-            if (!response.ok) throw new Error('Erro ao salvar as preferências no servidor.');
+            if (!response || !response.ok) throw new Error('Erro ao salvar as preferências no servidor.');
 
             if (success) success.classList.add('bf-visible');
             setTimeout(finishOnboarding, 900);

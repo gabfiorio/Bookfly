@@ -1,3 +1,5 @@
+
+
 if (Auth.isLogged()) window.location.href = Auth.getLandingPage();
 
 async function handleLogin() {
@@ -19,9 +21,21 @@ async function handleLogin() {
   spin.style.display = 'block';
 
   try {
-    await new Promise(r => setTimeout(r, 800));
-    Auth.setToken('mock-token-123');
-    Auth.setUser({ id: 1, nome: 'Leitor Exemplo', email });
+    const response = await apiFetch(API_ENDPOINTS.login, {
+      method: 'POST',
+      body: JSON.stringify({ email, senha }),
+    });
+
+    if (!response || !response.ok) {
+      throw new Error('Erro ao entrar. Verifique seus dados e tente novamente.');
+    }
+
+    const data = await response.json().catch(() => ({}));
+    const token = data.token || data.accessToken || data.access_token || 'mock-token-123';
+    const user = data.user || data.usuario || { id: data.id || 1, nome: data.nome || data.name || 'Leitor Exemplo', email };
+
+    Auth.setToken(token);
+    Auth.setUser(user);
     window.location.href = Auth.getLandingPage();
   } catch (err) {
     alert.textContent = err.message || 'Erro ao entrar. Tente novamente.';
