@@ -1,8 +1,7 @@
 
 .page-wrap { 
     padding: 32px 20px; 
-    /* Mudado de #fbf9f6 fixo para transparente ou uma variável do seu base.css */
-    background-color: transparent; 
+    background: var(--purple-light);
 }
 
 .form-topbar {
