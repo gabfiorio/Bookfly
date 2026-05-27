@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bookfly — Recuperar senha</title>
+  <link rel="stylesheet" href="css/base.css"/>
+  <link rel="stylesheet" href="css/login.css"/>
+  <link rel="stylesheet" href="css/senha.css"/>
+</head>
+<body>
+ 
+  <a href="login.html" class="back">← Voltar</a>
+ 
+  <div class="auth-wrap">
+    <img src="assets/lirica.png" alt="Bookfly" class="auth-logo"/>
+
+    <div id="stepRequest">
+      <h1>Recuperar senha</h1>
+      <p class="auth-subtitle">Informe o e-mail da sua conta e enviaremos um link para redefinir sua senha.</p>
+ 
+      <div class="auth-form">
+        <div class="bf-alert bf-alert-error" id="alertMsg"></div>
+ 
+        <input class="bf-input" type="email" id="emailInput"
+               placeholder="Seu e-mail" autocomplete="email" autofocus/>
+ 
+        <button class="btn-full" id="submitBtn" onclick="handleRecuperarSenha()">
+          <span id="btnText">Enviar link</span>
+          <div class="bf-spinner" id="spinner"></div>
+        </button>
+      </div>
+ 
+      <p class="auth-footer">
+        Lembrou a senha? <a href="login.html">Entrar</a>
+      </p>
+    </div>
+
+    <div id="stepConfirm" style="display:none">
+      <div class="confirm-icon">📬</div>
+      <h1>E-mail enviado!</h1>
+      <p class="auth-subtitle confirm-desc">
+        Enviamos um link de recuperação para <strong id="confirmEmail"></strong>.
+        Verifique sua caixa de entrada (e o spam, por via das dúvidas).
+      </p>
+ 
+      <button class="btn-full" style="margin-top:8px" onclick="handleReenviar()">
+        <span id="reenviarText">Reenviar e-mail</span>
+        <div class="bf-spinner" id="reenviarSpinner"></div>
+      </button>
+ 
+      <p class="auth-footer">
+        <a href="login.html">← Voltar para o login</a>
+      </p>
+    </div>
+  </div>
+ 
+  <script src="js/utils.js"></script>
+  <script src="js/recuperar-senha.js"></script>
+</body>
+</html>
