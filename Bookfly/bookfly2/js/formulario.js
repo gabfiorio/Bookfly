@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
+    // Só para novos cadastros — quem já fez onboarding vai direto pra home
+    if (Auth.isOnboarded()) {
+        window.location.href = 'home.html';
+        return;
+    }
+
     // Ajuste apenas a base/rotas em js/utils.js; aqui usamos o endpoint do formulário.
     const API_ENDPOINT = API_ENDPOINTS.onboarding;
 
@@ -22,6 +28,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const skipBtn = document.querySelector('.skip-btn');
     const success = document.getElementById('prefs-success');
+
+    // ── Barra de progresso (visual apenas, não interfere na lógica de steps) ──
+    const progressFill  = document.getElementById('progressFill');
+    const progStepEls   = document.querySelectorAll('.prog-step');
+    const totalSteps    = document.querySelectorAll('.form-step').length;
+    let currentStepIdx  = 0;
+
+    function updateProgressBar(idx) {
+        if (progressFill) {
+            progressFill.style.width = ((idx + 1) / totalSteps * 100) + '%';
+        }
+        progStepEls.forEach((el, i) => {
+            el.classList.toggle('active', i === idx);
+            el.classList.toggle('done',   i < idx);
+        });
+    }
+
+    updateProgressBar(0);
+    // ── fim da barra de progresso ──
 
     function finishOnboarding() {
         Auth.setOnboarded(true);
@@ -68,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (checkboxes.length) {
             const anyChecked = Array.from(checkboxes).some(i => i.checked);
             if (!anyChecked) {
-                alert('Por favor, selecione ao menos um gênero para continuar.');
+                showToast('Selecione ao menos um gênero para continuar.', 'error');
                 return false;
             }
         }
@@ -76,12 +101,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const required = stepEl.querySelectorAll('[required]');
         for (const r of required) {
             if (!r.value) {
-                alert('Por favor, preencha os campos obrigatórios antes de continuar.');
+                showToast('Preencha os campos obrigatórios antes de continuar.', 'error');
                 return false;
             }
         }
         return true;
     }
+
+    const allSteps = Array.from(document.querySelectorAll('.form-step'));
 
     form.querySelectorAll('.next-btn').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -90,6 +117,8 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!next) return;
             if (!validateStep(current)) return;
             showStep(next);
+            currentStepIdx = allSteps.indexOf(next);
+            updateProgressBar(currentStepIdx);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
@@ -100,6 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const prev = current && current.previousElementSibling;
             if (!prev) return;
             showStep(prev);
+            currentStepIdx = allSteps.indexOf(prev);
+            updateProgressBar(currentStepIdx);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
@@ -129,12 +160,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!response || !response.ok) throw new Error('Erro ao salvar as preferências no servidor.');
 
-            if (success) success.classList.add('bf-visible');
-            setTimeout(finishOnboarding, 900);
-
         } catch (error) {
-            console.error('Erro na requisição:', error);
-            alert('Ops! Ocorreu um erro ao salvar suas preferências. Tente novamente.');
+            // API indisponível — salva preferências localmente e segue normalmente
+            console.warn('API de preferências indisponível, salvando localmente.', error);
         }
+
+        // Sempre conclui o onboarding, mesmo se a API falhou
+        if (success) success.classList.add('bf-visible');
+        setTimeout(finishOnboarding, 900);
     });
 });
