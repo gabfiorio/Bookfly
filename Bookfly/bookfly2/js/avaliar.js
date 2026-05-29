@@ -3,20 +3,26 @@ requireAuth();
 let selectedBook  = null;
 let selectedStars = 0;
 
-const MOCK_BOOKS = [
-  { id:1,  titulo:'Duna',                         autor:'Frank Herbert',         ano:1965, paginas:687,  emoji:'🏜️', desc:'A épica história de Paul Atreides no planeta deserto de Arrakis.' },
-  { id:2,  titulo:'1984',                         autor:'George Orwell',         ano:1949, paginas:328,  emoji:'👁️', desc:'Uma distopia sobre um regime totalitário onde o Grande Irmão te observa.' },
-  { id:3,  titulo:'Fundação',                     autor:'Isaac Asimov',          ano:1951, paginas:255,  emoji:'🌌', desc:'Hari Seldon e a missão de preservar o conhecimento da humanidade.' },
-  { id:4,  titulo:'O Alquimista',                 autor:'Paulo Coelho',          ano:1988, paginas:208,  emoji:'✨', desc:'A jornada de Santiago em busca de seu tesouro pessoal.' },
-  { id:5,  titulo:'Crime e Castigo',              autor:'Fiódor Dostoiévski',    ano:1866, paginas:671,  emoji:'⚖️', desc:'Raskólnikov e o peso psicológico de um crime premeditado.' },
-  { id:6,  titulo:'O Senhor dos Anéis',           autor:'J.R.R. Tolkien',        ano:1954, paginas:1178, emoji:'💍', desc:'A grande jornada de Frodo para destruir o Um Anel.' },
-  { id:7,  titulo:'Harry Potter e a Pedra Filosofal', autor:'J.K. Rowling',    ano:1997, paginas:332,  emoji:'⚡', desc:'O início da jornada mágica do bruxo Harry Potter em Hogwarts.' },
-  { id:8,  titulo:'A Menina que Roubava Livros',  autor:'Markus Zusak',         ano:2005, paginas:556,  emoji:'📖', desc:'Liesel Meminger e a sua relação com as palavras durante a Segunda Guerra.' },
-  { id:9,  titulo:'Sapiens',                      autor:'Yuval Noah Harari',     ano:2011, paginas:443,  emoji:'🧠', desc:'Uma breve história da humanidade desde o surgimento do Homo sapiens.' },
-  { id:10, titulo:'O Mestre e Margarida',         autor:'Mikhail Bulgakov',      ano:1967, paginas:480,  emoji:'😈', desc:'O Diabo visita Moscou soviética com consequências caóticas e magistrais.' },
-];
+let BOOKS = [];
 
 const STAR_CAPTIONS = ['','Não gostei','Foi ok','Gostei','Muito bom!','Obra-prima! ⭐'];
+
+async function loadBooks() {
+  try {
+    const apiBooks = await fetchBooksCatalog();
+    if (Array.isArray(apiBooks) && apiBooks.length) {
+      BOOKS = apiBooks.map((book) => ({
+        ...book,
+        desc: stripHtml(book.sinopse || book.desc || ''),
+      }));
+      return;
+    }
+  } catch (err) {
+    console.warn('Avaliar: catálogo indisponível.', err);
+  }
+
+  BOOKS = [];
+}
 
 const doSearch = debounce(function() {
   const q       = document.getElementById('searchInput').value.trim().toLowerCase();
@@ -24,7 +30,7 @@ const doSearch = debounce(function() {
 
   if (q.length < 2) { results.style.display = 'none'; return; }
 
-  const filtered = MOCK_BOOKS.filter(b =>
+  const filtered = BOOKS.filter(b =>
     b.titulo.toLowerCase().includes(q) || b.autor.toLowerCase().includes(q)
   ).slice(0, 6);
 
@@ -50,7 +56,7 @@ const doSearch = debounce(function() {
 function handleSearch() { doSearch(); }
 
 function selectBook(id) {
-  const book = MOCK_BOOKS.find(b => b.id === id);
+  const book = BOOKS.find(b => b.id === id);
   if (!book) return;
   selectedBook = book;
   document.getElementById('searchResults').style.display = 'none';
@@ -92,6 +98,8 @@ function updateCharCount() {
   const len = document.getElementById('reviewText').value.length;
   document.getElementById('charCount').textContent = `${len} / 1000`;
 }
+
+loadBooks();
 
 async function submitReview() {
   if (!selectedBook) { showToast('Selecione um livro.', 'error'); return; }

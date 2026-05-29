@@ -167,74 +167,94 @@ function editGoal() {
 }
 
 function addChallengeBook() {
-  const BOOKS_DB = [
-    { id:1,  titulo:'Duna',              autor:'Frank Herbert',      emoji:'🏜️' },
-    { id:2,  titulo:'1984',              autor:'George Orwell',      emoji:'👁️' },
-    { id:3,  titulo:'Fundação',          autor:'Isaac Asimov',       emoji:'🌌' },
-    { id:4,  titulo:'O Alquimista',      autor:'Paulo Coelho',       emoji:'✨' },
-    { id:5,  titulo:'Crime e Castigo',   autor:'F. Dostoiévski',     emoji:'⚖️' },
-    { id:6,  titulo:'O Senhor dos Anéis',autor:'J.R.R. Tolkien',     emoji:'💍' },
-    { id:7,  titulo:'Sapiens',           autor:'Y. N. Harari',       emoji:'🧠' },
-    { id:8,  titulo:'O Mestre e Margarida', autor:'M. Bulgakov',     emoji:'😈' },
-  ];
   const monthOptions = MONTHS.map((m, i) => `<option value="${i+1}">${m}</option>`).join('');
 
-  openModal({
-    title: '📚 Adicionar livro lido',
-    size: 'md',
-    body: `
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div>
-          <label class="modal-label">Livro *</label>
-          <input id="add-titulo" class="bf-input" placeholder="Título do livro"
-                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
-        </div>
-        <div>
-          <label class="modal-label">Autor</label>
-          <input id="add-autor" class="bf-input" placeholder="Autor"
-                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  (async () => {
+    let bookOptions = [];
+    try {
+      const apiBooks = await fetchBooksCatalog();
+      bookOptions = apiBooks.slice(0, 12).map((book) => ({
+        id: book.id,
+        titulo: book.titulo,
+        autor: book.autor,
+        emoji: book.emoji || '📚',
+      }));
+    } catch (err) {
+      console.warn('Desafio: fallback para livros locais.', err);
+      bookOptions = [
+        { id:1, titulo:'Duna', autor:'Frank Herbert', emoji:'🏜️' },
+        { id:2, titulo:'1984', autor:'George Orwell', emoji:'👁️' },
+        { id:3, titulo:'Fundação', autor:'Isaac Asimov', emoji:'🌌' },
+        { id:4, titulo:'O Alquimista', autor:'Paulo Coelho', emoji:'✨' },
+      ];
+    }
+
+    openModal({
+      title: '📚 Adicionar livro lido',
+      size: 'md',
+      body: `
+        <div style="display:flex;flex-direction:column;gap:14px">
           <div>
-            <label class="modal-label">Mês de conclusão</label>
-            <select id="add-mes" class="bf-input"
-                    style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)">
-              ${monthOptions}
-            </select>
+            <label class="modal-label">Livro *</label>
+            <input id="add-titulo" class="bf-input" placeholder="Título do livro"
+                   style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
           </div>
           <div>
-            <label class="modal-label">Nota</label>
-            <select id="add-stars" class="bf-input"
-                    style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)">
-              <option value="0">Sem nota</option>
-              <option value="1">★☆☆☆☆</option>
-              <option value="2">★★☆☆☆</option>
-              <option value="3">★★★☆☆</option>
-              <option value="4">★★★★☆</option>
-              <option value="5" selected>★★★★★</option>
-            </select>
+            <label class="modal-label">Autor</label>
+            <input id="add-autor" class="bf-input" placeholder="Autor"
+                   style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
           </div>
-        </div>
-      </div>`,
-    buttons: [
-      { label: 'Cancelar', type: 'ghost' },
-      { label: 'Adicionar', type: 'primary', closeOnClick: false, onClick: (close) => {
-          const titulo = document.getElementById('add-titulo')?.value.trim();
-          const autor  = document.getElementById('add-autor')?.value.trim() || '';
-          const mes    = parseInt(document.getElementById('add-mes')?.value) || new Date().getMonth() + 1;
-          const stars  = parseInt(document.getElementById('add-stars')?.value) || 0;
-          if (!titulo) { showToast('Título obrigatório.', 'error'); return false; }
-          const emojis = ['📘','📗','📕','📙','📓'];
-          const newBook = { id: Date.now(), titulo, autor, emoji: emojis[Math.floor(Math.random()*5)], mes, stars };
-          state[YEAR].livros.push(newBook);
-          saveState(state);
-          render();
-          close();
-          showToast(`"${titulo}" adicionado!`);
+          <div>
+            <label class="modal-label">Sugeridos pela API</label>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;max-height:124px;overflow:auto">
+              ${bookOptions.map((book) => `
+                <button class="goal-preset" type="button" style="padding:8px 10px" onclick="document.getElementById('add-titulo').value='${escapeHtml(book.titulo)}';document.getElementById('add-autor').value='${escapeHtml(book.autor)}'">
+                  ${book.emoji} ${escapeHtml(book.titulo)}
+                </button>`).join('')}
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <label class="modal-label">Mês de conclusão</label>
+              <select id="add-mes" class="bf-input"
+                      style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)">
+                ${monthOptions}
+              </select>
+            </div>
+            <div>
+              <label class="modal-label">Nota</label>
+              <select id="add-stars" class="bf-input"
+                      style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)">
+                <option value="0">Sem nota</option>
+                <option value="1">★☆☆☆☆</option>
+                <option value="2">★★☆☆☆</option>
+                <option value="3">★★★☆☆</option>
+                <option value="4">★★★★☆</option>
+                <option value="5" selected>★★★★★</option>
+              </select>
+            </div>
+          </div>
+        </div>`,
+      buttons: [
+        { label: 'Cancelar', type: 'ghost' },
+        { label: 'Adicionar', type: 'primary', closeOnClick: false, onClick: (close) => {
+            const titulo = document.getElementById('add-titulo')?.value.trim();
+            const autor  = document.getElementById('add-autor')?.value.trim() || '';
+            const mes    = parseInt(document.getElementById('add-mes')?.value) || new Date().getMonth() + 1;
+            const stars  = parseInt(document.getElementById('add-stars')?.value) || 0;
+            if (!titulo) { showToast('Título obrigatório.', 'error'); return false; }
+            const emojis = ['📘','📗','📕','📙','📓'];
+            const newBook = { id: Date.now(), titulo, autor, emoji: emojis[Math.floor(Math.random()*5)], mes, stars };
+            state[YEAR].livros.push(newBook);
+            saveState(state);
+            render();
+            close();
+            showToast(`"${titulo}" adicionado!`);
+          },
         },
-      },
-    ],
-  });
+      ],
+    });
+  })();
 }
 
 function removeBook(id) {

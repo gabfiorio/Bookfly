@@ -194,17 +194,26 @@ function sharePost(id) {
 }
 
 // ── Composer com modal de seleção de livro ──
-const MOCK_BOOKS_SEARCH = [
-  { id:1,  titulo:'Duna',                 autor:'Frank Herbert',      emoji:'🏜️' },
-  { id:2,  titulo:'1984',                 autor:'George Orwell',      emoji:'👁️' },
-  { id:3,  titulo:'Fundação',             autor:'Isaac Asimov',       emoji:'🌌' },
-  { id:4,  titulo:'O Alquimista',         autor:'Paulo Coelho',       emoji:'✨' },
-  { id:5,  titulo:'Crime e Castigo',      autor:'Fiódor Dostoiévski', emoji:'⚖️' },
-  { id:6,  titulo:'O Senhor dos Anéis',   autor:'J.R.R. Tolkien',     emoji:'💍' },
-  { id:7,  titulo:'Harry Potter',         autor:'J.K. Rowling',       emoji:'⚡' },
-  { id:8,  titulo:'Sapiens',              autor:'Yuval Noah Harari',  emoji:'🧠' },
-  { id:9,  titulo:'O Mestre e Margarida', autor:'Mikhail Bulgakov',   emoji:'😈' },
-];
+let BOOKS_SEARCH = [];
+
+async function loadBooksSearch() {
+  try {
+    const apiBooks = await fetchBooksCatalog();
+    if (Array.isArray(apiBooks) && apiBooks.length) {
+      BOOKS_SEARCH = apiBooks.map((book) => ({
+        id: book.id,
+        titulo: book.titulo,
+        autor: book.autor,
+        emoji: book.emoji || '📚',
+      }));
+      return;
+    }
+  } catch (err) {
+    console.warn('Home: catálogo indisponível.', err);
+  }
+
+  BOOKS_SEARCH = [];
+}
 
 let taggedBook = null;
 
@@ -214,12 +223,12 @@ function tagBook() {
            style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark);margin-bottom:12px"
            oninput="filterModalBooks(this.value)"/>
     <div id="modal-book-list" class="modal-book-list">
-      ${MOCK_BOOKS_SEARCH.map(b => `
+      ${BOOKS_SEARCH.length ? BOOKS_SEARCH.map(b => `
         <div class="modal-book-item" onclick="selectTagBook(${b.id},'${escapeHtml(b.titulo)}')">
           <span class="modal-book-emoji">${b.emoji}</span>
           <div><div style="font-weight:600;font-size:13px">${escapeHtml(b.titulo)}</div>
           <div style="font-size:11.5px;color:var(--brown-light)">${escapeHtml(b.autor)}</div></div>
-        </div>`).join('')}
+        </div>`).join('') : '<p style="text-align:center;color:var(--brown-light);font-size:13px;padding:16px 0">Nenhum livro disponível.</p>'}
     </div>`;
 
   openModal({
@@ -234,8 +243,8 @@ function tagBook() {
 
 function filterModalBooks(q) {
   const filtered = q.length < 1
-    ? MOCK_BOOKS_SEARCH
-    : MOCK_BOOKS_SEARCH.filter(b => b.titulo.toLowerCase().includes(q.toLowerCase()) || b.autor.toLowerCase().includes(q.toLowerCase()));
+    ? BOOKS_SEARCH
+    : BOOKS_SEARCH.filter(b => b.titulo.toLowerCase().includes(q.toLowerCase()) || b.autor.toLowerCase().includes(q.toLowerCase()));
   document.getElementById('modal-book-list').innerHTML = filtered.length
     ? filtered.map(b => `
         <div class="modal-book-item" onclick="selectTagBook(${b.id},'${escapeHtml(b.titulo)}')">
@@ -301,13 +310,14 @@ function followUser(id, btn) {
 }
 
 function renderTrending() {
-  document.getElementById('trendingBooks').innerHTML = MOCK_TRENDING.map(b => `
+  const books = [...BOOKS_SEARCH].slice(0, 4);
+  document.getElementById('trendingBooks').innerHTML = books.map((b, idx) => `
     <a class="trending-book" href="livro.html?id=${b.id}" style="text-decoration:none;color:inherit">
       <div class="book-cover">${b.emoji}</div>
       <div class="book-info">
         <div class="book-title">${escapeHtml(b.titulo)}</div>
         <div class="book-author">${escapeHtml(b.autor)}</div>
-        <div class="book-rating">★ ${b.nota}</div>
+        <div class="book-rating">#${idx + 1}</div>
       </div>
     </a>`).join('');
 }
@@ -346,6 +356,7 @@ function renderChallengeSidebar() {
 }
 
 renderFeed(ALL_MOCK_POSTS.slice(0, BATCH));
+loadBooksSearch();
 renderSuggested();
 renderTrending();
 renderChallengeSidebar();
