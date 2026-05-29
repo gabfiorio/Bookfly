@@ -392,3 +392,93 @@ html.dark .carousel-book:hover {
 html.dark .carousel-book {
   box-shadow: 0 4px 14px rgba(0,0,0,0.45);
 }
+
+/* ============================================================
+   ANIMAÇÕES — index.css
+   ============================================================ */
+
+.navbar {
+  animation: slideDown 0.6s cubic-bezier(0.4,0,0.2,1) both;
+}
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.hero-logo {
+  animation: heroPop 0.9s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes heroPop {
+  from { opacity: 0; transform: scale(0.8) translateY(30px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0); }
+}
+
+.bento-card {
+  opacity: 0;
+  animation: cardPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.card-perfil     { animation-delay: 0.25s; }
+.card-comunidade { animation-delay: 0.38s; }
+.card-inbox      { animation-delay: 0.50s; }
+.card-chats      { animation-delay: 0.62s; }
+
+@keyframes cardPop {
+  from { opacity: 0; transform: translateY(28px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255,255,255,0.18) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.55s ease;
+  pointer-events: none;
+  border-radius: inherit;
+}
+.bento-card:hover::before {
+  transform: translateX(100%);
+}
+
+.star {
+  opacity: 0;
+  animation: starPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+.star:nth-child(1) { animation-delay: 0.5s; }
+.star:nth-child(2) { animation-delay: 0.62s; }
+.star:nth-child(3) { animation-delay: 0.74s; }
+.star:nth-child(4) { animation-delay: 0.86s; }
+.star:nth-child(5) { animation-delay: 0.98s; }
+
+@keyframes starPop {
+  from { opacity: 0; transform: scale(0) rotate(-30deg); }
+  to   { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.cta-btn {
+  animation: ctaPulse 2.8s ease-in-out 1.5s infinite;
+}
+@keyframes ctaPulse {
+  0%, 100% { box-shadow: 0 0 0 0px rgba(134,129,189,0); }
+  50%       { box-shadow: 0 0 0 10px rgba(134,129,189,0.2); }
+}
+
+.perfil-shelf {
+  opacity: 0;
+  animation: shelfSlide 0.4s ease forwards;
+}
+.perfil-shelf:nth-child(1) { animation-delay: 0.5s; }
+.perfil-shelf:nth-child(2) { animation-delay: 0.62s; }
+.perfil-shelf:nth-child(3) { animation-delay: 0.74s; }
+.perfil-shelf:nth-child(4) { animation-delay: 0.86s; }
+
+@keyframes shelfSlide {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
