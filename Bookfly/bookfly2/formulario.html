@@ -8,14 +8,36 @@
   <link rel="stylesheet" href="css/formulario.css"/>
 </head>
 <body>
+
+  <nav class="topnav">
+    <a href="home.html" class="topnav-brand" title="Início">
+      <img src="assets/lirica.png" alt="Bookfly" class="topnav-logo"/>
+    </a>
+    <div class="topnav-spacer"></div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggleBtn">🌙</button>
+    <button class="bf-btn bf-btn-ghost skip-btn topnav-link" type="button">Pular por agora</button>
+  </nav>
+
   <main class="page-wrap">
     <section class="preferences bf-card">
+
       <div class="form-topbar">
         <div>
           <p class="eyebrow">Bookfly</p>
           <h1>Personalizar perfil</h1>
         </div>
-        <button class="bf-btn bf-btn-ghost skip-btn" type="button">Pular por agora</button>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-steps">
+          <span class="prog-step active" id="prog-1">Gêneros</span>
+          <span class="prog-step" id="prog-2">Objetivo</span>
+          <span class="prog-step" id="prog-3">Rotina</span>
+          <span class="prog-step" id="prog-4">Formato</span>
+        </div>
       </div>
 
       <div id="prefs-success" class="bf-alert bf-alert-success" role="status" aria-live="polite">Preferências salvas! Redirecionando…</div>
@@ -107,8 +129,8 @@
           </header>
 
           <div class="form-group">
-            <div class="form-row-split" style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;">
-              <div style="flex: 1; min-width: 250px;">
+            <div class="form-row-split">
+              <div class="split-col">
                 <label for="frequency" class="group-label">Com que frequência você lê?</label>
                 <select id="frequency" name="frequency" class="bf-input">
                   <option value="diario">Todos os dias</option>
@@ -118,7 +140,7 @@
                 </select>
               </div>
 
-              <div style="flex: 1; min-width: 250px;">
+              <div class="split-col">
                 <label for="books-per-year" class="group-label">Quantos livros lê por ano (média)?</label>
                 <select id="books-per-year" name="books_per_year" class="bf-input">
                   <option value="pouco">0 a 2 livros</option>
@@ -147,17 +169,17 @@
             <div class="format-row">
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="book_length" value="curto">
-                <img src="img/curto.png" alt="Curto" class="step-img">
+                <span class="option-emoji">📗</span>
                 <span>Curtos (Até 200 págs.)</span>
               </label>
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="book_length" value="medio" checked>
-                <img src="img/medio.png" alt="Médio" class="step-img">
+                <span class="option-emoji">📘</span>
                 <span>Médios (200 a 400 págs.)</span>
               </label>
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="book_length" value="longo">
-                <img src="img/longo.png" alt="Longo" class="step-img">
+                <span class="option-emoji">📙</span>
                 <span>Longos / Épicos (+400 págs.)</span>
               </label>
             </div>
@@ -168,22 +190,22 @@
             <div class="format-row">
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="format" value="fisico">
-                <img src="img/fisico.png" alt="Físico" class="step-img">
+                <span class="option-emoji">📖</span>
                 <span>Livro físico</span>
               </label>
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="format" value="ebook">
-                <img src="img/ebook.png" alt="Ebook" class="step-img">
+                <span class="option-emoji">📱</span>
                 <span>E-book / Kindle</span>
               </label>
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="format" value="audio">
-                <img src="img/audio.png" alt="Audiobook" class="step-img">
+                <span class="option-emoji">🎧</span>
                 <span>Audiobook</span>
               </label>
               <label class="option option-inline">
                 <input class="bf-input" type="radio" name="format" value="hibrido" checked>
-                <img src="img/tanto-faz.png" alt="Tanto faz" class="step-img">
+                <span class="option-emoji">✨</span>
                 <span>Tanto faz</span>
               </label>
             </div>
@@ -199,6 +221,7 @@
     </section>
   </main>
 
+  <script src="js/tema.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/formulario.js" defer></script>
 </body>
