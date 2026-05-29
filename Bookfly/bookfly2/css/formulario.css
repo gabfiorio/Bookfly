@@ -1,301 +1,324 @@
+.topnav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 58px;
+  background: rgba(221,217,206,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(134,129,189,0.15);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 16px;
+}
+.topnav-logo  { height: 26px; }
+.topnav-spacer { flex: 1; }
 
-.page-wrap { 
-    padding: 32px 20px; 
-    background: var(--purple-light);
+html.dark .topnav {
+  background: rgba(26,24,20,0.92);
+  border-bottom-color: rgba(155,150,204,0.18);
 }
 
+.page-wrap {
+  padding: 82px 20px 60px;
+  min-height: 100vh;
+}
+
+.preferences {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 36px 40px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+html.dark .preferences {
+  background: var(--white);
+}
+
+/* ── Cabeçalho do card ── */
 .form-topbar {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .eyebrow {
-    font-size: 12px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--brown-light);
-    font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--purple);
+  font-weight: 700;
+  margin-bottom: 4px;
 }
 
 .form-topbar h1 {
-    font-family: var(--font-display);
-    font-size: 30px;
-    line-height: 1.1;
-    color: var(--purple-deeper);
-    margin-top: 4px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.15;
+  color: var(--purple-deeper);
 }
 
-.skip-btn {
-    white-space: nowrap;
-    align-self: center;
+.progress-wrap {
+  margin-bottom: 28px;
 }
 
-.preferences { 
-    max-width: 820px; 
-    margin: 32px auto; 
-    border-radius: 24px; /* Mantém o design fofinho arredondado */
-    padding: 32px;
-    background: var(--white); /* O card em si fica branco para contrastar com o fundo do site */
-    box-shadow: 0 8px 24px rgba(141, 110, 99, 0.06); /* Sombra leve usando a paleta de marrons */
+.progress-track {
+  height: 5px;
+  background: var(--beige-dark);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 25%;
+  background: var(--purple);
+  border-radius: var(--radius-pill);
+  transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+}
+
+.prog-step {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brown-light);
+  transition: color var(--transition);
+}
+
+.prog-step.active { color: var(--purple-dark); }
+.prog-step.done   { color: var(--purple); }
+
+.reading-form {
+  display: block;
+}
+
+/*
+ * IMPORTANTE: NÃO usar opacity/transform aqui junto com display:none
+ * porque display:none → display:block não dispara transitions no browser.
+ * O JS do formulario.js controla a visibilidade via classList.add('active').
+ */
+.form-step {
+  display: none;
+}
+
+.form-step.active {
+  display: block;
 }
 
 .pref-head {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
-.pref-head h2 { 
-    font-family: var(--font-display); 
-    font-size: 26px; /* Um pouco maior para dar hierarquia */
-    color: var(--purple-deeper); 
-    margin-bottom: 8px; 
-    letter-spacing: -0.5px;
+.pref-head h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--purple-deeper);
+  margin-bottom: 6px;
 }
 
-.pref-head .muted { 
-    color: var(--brown-light); 
-    font-size: 15px; 
-    line-height: 1.5;
+.pref-head .muted {
+  color: var(--brown-light);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.reading-form { 
-    display: grid; 
-    gap: 24px; /* Espaçamento maior respira melhor (UX) */
+.form-group {
+  display: block;
 }
 
-.form-group { 
-    display: block; 
+.genres-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
 }
 
-.group-label { 
-    display: block; 
-    font-weight: 600; 
-    font-size: 15px;
-    margin-bottom: 12px; 
-    color: var(--brown-mid); 
+/* ── Cards de opção ── */
+.option {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  padding: 18px 14px;
+  border-radius: var(--radius-md);
+  background: var(--beige-card);
+  border: 2px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--brown-mid);
+  transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1),
+              box-shadow var(--transition),
+              border-color var(--transition),
+              background var(--transition);
+  user-select: none;
+  width: 100%;
 }
 
-/* Grid de Gêneros e Opções */
-.genres-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); 
-    gap: 12px; 
+.option input[type="checkbox"],
+.option input[type="radio"] {
+  display: none;
 }
 
-/* O Card de Opção ficou mais interativo e fofo */
-.option { 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center; /* Centraliza o texto para parecer um botão limpo */
-    text-align: center;
-    padding: 14px 16px; 
-    border-radius: 16px; /* Cantos arredondados fofos */
-    background: #f7f4f0; /* Fundo neutro sutil para os não selecionados */
-    border: 2px solid transparent; /* Borda invisível para evitar pulos no hover */
-    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Animação elástica charmosa */
-    cursor: pointer; 
-    font-size: 14px; 
-    font-weight: 500;
-    color: var(--brown); 
-    user-select: none;
+.option:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-sm);
+  border-color: var(--purple-xlight);
 }
 
-/* Esconde o quadradinho do checkbox/radio padrão para dar estética de App Moderno */
-.option input[type="checkbox"], 
-.option input[type="radio"] { 
-    display: none; 
+.option.selected {
+  background: var(--purple-xlight);
+  border-color: var(--purple-light);
+  box-shadow: 0 4px 14px rgba(134,129,189,0.2);
 }
 
-/* Efeito de flutuar ao passar o mouse */
-.option:hover { 
-    transform: translateY(-3px); 
-    background: #f1ede7;
-    box-shadow: 0 4px 12px rgba(141, 110, 99, 0.12); 
+.option.selected span {
+  color: var(--purple-deeper);
+  font-weight: 700;
 }
 
-/* Estado selecionado - Transmite clareza visual imediata (UI) */
-.option.selected { 
-    background: rgba(142, 108, 239, 0.08); /* Fundo com tom sutil do seu roxo */
-    border-color: var(--purple-light); 
-    box-shadow: 0 4px 12px rgba(142, 108, 239, 0.15);
+.option-emoji {
+  font-size: 36px;
+  line-height: 1;
+  transition: transform 0.3s ease;
 }
 
-.option.selected span { 
-    color: var(--purple-deeper); 
-    font-weight: 700; 
+.option.selected .option-emoji {
+  transform: scale(1.15) rotate(5deg);
 }
 
-/* Alinhamento de linhas (Formatos) */
-.format-row { 
-    display: flex; 
-    gap: 12px; 
-    flex-wrap: wrap; 
+/* ── Imagens nos cards ── */
+.step-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease;
 }
 
-.option-inline { 
-    flex: 1; /* Faz os botões dividirem o espaço igualmente no celular */
-    min-width: 120px;
+.option.selected .step-img {
+  transform: scale(1.08) rotate(2deg);
 }
 
-/* Customização charmosa do Select */
-select.bf-input { 
-    appearance: none; 
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 14px;
-    border: 2px solid #eaddd3;
-    background-color: var(--white);
-    color: var(--brown);
-    font-size: 14px;
-    font-weight: 500;
-    transition: all var(--transition);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238E6CEF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); /* Seta rochosa nativa em SVG, muito mais limpa */
-    background-position: calc(100% - 16px) center; 
-    background-repeat: no-repeat;
-    background-size: 16px;
-    cursor: pointer;
+.group-label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: var(--brown-mid);
+}
+
+select.bf-input {
+  appearance: none;
+  width: 100%;
+  padding: 13px 18px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--beige-dark);
+  background-color: var(--beige-card);
+  color: var(--brown);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238681BD' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: calc(100% - 16px) center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  cursor: pointer;
 }
 
 select.bf-input:focus {
-    outline: none;
-    border-color: var(--purple-light);
-    box-shadow: 0 0 0 4px rgba(142, 108, 239, 0.15);
+  outline: none;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(134,129,189,0.2);
+  background-color: var(--white);
 }
 
-/* Rodapé de Ações */
-.form-actions { 
-    display: flex; 
-    gap: 12px; 
-    justify-content: flex-end; 
-    margin-top: 12px; 
+html.dark select.bf-input {
+  background-color: var(--beige-card);
+  border-color: var(--beige-dark);
+  color: var(--brown);
 }
 
-/* Ajustes nos botões para combinar com o estilo */
-.bf-btn {
-    padding: 12px 24px;
-    border-radius: 14px;
-    font-weight: 600;
-    transition: all var(--transition);
-}
-.bf-btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(142, 108, 239, 0.3);
+.form-row-split {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 
-/* Responsivo */
-@media (max-width: 480px) {
-    .genres-grid { 
-        grid-template-columns: 1fr 1fr; 
-        gap: 10px;
-    }
-    .preferences { 
-        margin: 12px; 
-        padding: 20px; 
-        border-radius: 20px;
-    }
-    .form-actions {
-        flex-direction: column; /* Botões empilhados no mobile facilitam o toque */
-    }
-    .form-actions .bf-btn {
-        width: 100%;
-    }
-
-    .form-topbar {
-        flex-direction: column;
-    }
-
-    .skip-btn {
-        width: 100%;
-    }
+.split-col {
+  flex: 1;
+  min-width: 220px;
 }
 
-/* Mostrar alert animado */
-.bf-alert { 
-    text-align: center; 
-    margin: 16px 0; 
-    padding: 12px;
-    border-radius: 12px;
-    display: none;
-    opacity: 0;
-    transform: scale(0.95);
-    transition: all 0.3s ease;
+.format-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.bf-alert.bf-visible { 
-    display: block; 
-    opacity: 1;
-    transform: scale(1);
-}
-/* Esconde as etapas que não estão ativas */
-.form-step {
-    display: none;
-    opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.4s ease;
+.option-inline {
+  flex: 1;
+  min-width: 120px;
 }
 
-/* Mostra apenas a etapa atual com um efeito suave de surgir */
-.form-step.active {
-    display: block;
-    opacity: 1;
-    transform: translateX(0);
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid var(--beige-dark);
 }
 
-/* Estilo para as imagens fofas dentro dos botões */
-.option {
-    flex-direction: column; /* Faz a imagem ficar EM CIMA e o texto EM BAIXO */
-    gap: 12px;
-    padding: 20px 16px; /* Mais espaçoso para caber a imagem */
-}
-
-.step-img {
-    width: 64px;  /* Tamanho perfeito para ícones/ilustrações 3D ou fofas */
-    height: 64px;
-    object-fit: contain;
-    transition: transform 0.3s var(--transition);
-}
-
-/* Microinteração: a imagem dá um pulinho quando o card é selecionado */
-.option.selected .step-img {
-    transform: scale(1.1) rotate(3deg);
+.bf-alert.bf-visible {
+  display: block;
 }
 
 @media (max-width: 720px) {
-    .page-wrap {
-        padding: 20px 12px;
-    }
+  .page-wrap {
+    padding: 74px 12px 40px;
+  }
+  .preferences {
+    padding: 24px 20px;
+    border-radius: var(--radius-md);
+  }
+  .form-topbar h1 { font-size: 22px; }
+  .pref-head h2   { font-size: 19px; }
+  .step-img       { width: 52px; height: 52px; }
+  .form-actions   { justify-content: stretch; }
+  .form-actions .bf-btn { flex: 1; }
+}
 
-    .preferences {
-        margin: 8px auto;
-        padding: 20px 16px;
-        border-radius: 18px;
-    }
-
-    .form-topbar h1 {
-        font-size: 26px;
-    }
-
-    .pref-head h2 {
-        font-size: 22px;
-    }
-
-    .option {
-        padding: 16px 12px;
-        gap: 10px;
-    }
-
-    .step-img {
-        width: 54px;
-        height: 54px;
-    }
-
-    .form-actions {
-        justify-content: stretch;
-    }
-
-    .form-actions .bf-btn {
-        flex: 1;
-    }
+@media (max-width: 480px) {
+  .genres-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .form-topbar {
+    flex-direction: column;
+  }
+  .skip-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .form-row-split {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+  .form-actions .bf-btn {
+    width: 100%;
+  }
+  .option-inline {
+    min-width: 90px;
+  }
 }
