@@ -1,8 +1,4 @@
 ﻿requireAuth();
-
-console.log('_selfUser.id:', _selfUser?.id, '| _viewedId:', _viewedId, '| IS_OWN:', IS_OWN);
-
-
 /* ── Detecta se é perfil próprio ou de outro usuário ── */
 const _urlParams   = new URLSearchParams(window.location.search);
 const _viewedId    = _urlParams.get('id') ? Number(_urlParams.get('id')) : null;
