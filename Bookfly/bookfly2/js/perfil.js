@@ -248,6 +248,36 @@ function updateStats() {
   document.getElementById('statLidos').textContent = SHELVES.lidos.length;
   document.getElementById('statLendo').textContent = SHELVES.lendo.length;
   document.getElementById('statQueremLer').textContent = SHELVES.quererlev.length;
+  updateFollowStats();
+}
+
+async function getFollowCount(kind) {
+  try {
+    const response = await apiFetch(`/seguidorUsuario/api/${kind}?usuarioId=${user.id}`);
+    if (!response || response.status === 204) return 0;
+    if (!response.ok) throw new Error(`Falha ao carregar ${kind}.`);
+
+    const payload = await response.json().catch(() => []);
+    return extractArrayPayload(payload).length;
+  } catch (err) {
+    console.warn(`Perfil: ${kind} indisponíveis.`, err);
+    return 0;
+  }
+}
+
+async function updateFollowStats() {
+  if (!user.id) return;
+
+  const [seguidores, seguindo] = await Promise.all([
+    getFollowCount('seguidores'),
+    getFollowCount('seguindo'),
+  ]);
+
+  const seguidoresEl = document.getElementById('statSeguidores');
+  const seguindoEl = document.getElementById('statSeguindo');
+
+  if (seguidoresEl) seguidoresEl.textContent = seguidores;
+  if (seguindoEl) seguindoEl.textContent = seguindo;
 }
 
 function renderFolders() {

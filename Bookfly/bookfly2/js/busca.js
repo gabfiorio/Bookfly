@@ -5,6 +5,7 @@ const AVATAR_COLORS = ['#8681BD','#F7A8B8','#F2956A','#A8D5BA','#F5D97E','#b0acd
 
 let BOOKS = [];
 let USERS = [];
+const currentUser = Auth.getUser();
 
 let activeTab = 'livros';
 
@@ -39,7 +40,38 @@ function normalizeUserFromApi(raw, index = 0) {
     cor: AVATAR_COLORS[index % AVATAR_COLORS.length],
     bio: firstDefined(raw.biografia, raw.bio, raw.descricao, raw.email, ''),
     urlImagem: firstDefined(raw.urlImagem, raw.url_imagem, raw.avatar, ''),
+    isFollowing: false,
   };
+}
+
+async function getFollowingIds() {
+  if (!currentUser?.id) return new Set();
+
+  try {
+    const response = await apiFetch(`/seguidorUsuario/api/seguindo?usuarioId=${currentUser.id}`);
+    if (!response || response.status === 204) return new Set();
+    if (!response.ok) throw new Error('Falha ao carregar seguindo.');
+
+    const payload = await response.json().catch(() => []);
+    const list = extractArrayPayload(payload);
+    return new Set(list.map((item) => Number(firstDefined(item.seguidoID, item.SeguidoID, item.seguidoId))));
+  } catch (err) {
+    console.warn('Busca: seguindo indisponível.', err);
+    return new Set();
+  }
+}
+
+async function getFollowersCount(userId) {
+  try {
+    const response = await apiFetch(`/seguidorUsuario/api/seguidores?usuarioId=${userId}`);
+    if (!response || response.status === 204) return 0;
+    if (!response.ok) throw new Error('Falha ao carregar seguidores.');
+
+    const payload = await response.json().catch(() => []);
+    return extractArrayPayload(payload).length;
+  } catch {
+    return 0;
+  }
 }
 
 async function loadUsersFromApi() {
@@ -56,7 +88,15 @@ async function loadUsersFromApi() {
 
     const payload = await response.json().catch(() => []);
     const list = extractArrayPayload(payload);
-    USERS = list.map(normalizeUserFromApi);
+    const followingIds = await getFollowingIds();
+    const users = list
+      .map(normalizeUserFromApi)
+      .filter((u) => Number(u.id) !== Number(currentUser?.id))
+      .map((u) => ({ ...u, isFollowing: followingIds.has(Number(u.id)) }));
+    USERS = await Promise.all(users.map(async (u) => ({
+      ...u,
+      seguidores: await getFollowersCount(u.id),
+    })));
   } catch (err) {
     console.warn('Busca: usuários indisponíveis.', err);
     USERS = [];
@@ -151,9 +191,13 @@ const doSearch = debounce(function(q) {
           <div class="urc-info">
             <div class="urc-name">${escapeHtml(u.nome)}</div>
             <div class="urc-bio">${escapeHtml(u.bio || 'Sem biografia.')}</div>
-            <div class="urc-stats">${u.livros} livros · ${u.seguidores} seguidores</div>
+            <div class="urc-stats" id="user-stats-${u.id}">${u.livros} livros · ${u.seguidores} seguidores</div>
           </div>
-          <button class="sug-follow" id="uf-${u.id}" onclick="toggleFollow(${u.id}, this)">Seguir</button>
+          <button
+            class="sug-follow ${u.isFollowing ? 'following' : ''}"
+            id="uf-${u.id}"
+            onclick="toggleFollow(${u.id}, this)"
+          >${u.isFollowing ? 'Seguindo' : 'Seguir'}</button>
         </div>`).join('')
     : '<div class="no-results">Nenhum leitor encontrado.</div>';
 }, 280);
@@ -184,11 +228,49 @@ function switchSearchTab(tab, btn) {
   document.getElementById(`${tab}Results`).classList.add('active');
 }
 
-function toggleFollow(id, btn) {
-  const isF = btn.classList.contains('following');
-  btn.classList.toggle('following', !isF);
-  btn.textContent = isF ? 'Seguir' : 'Seguindo';
-  showToast(isF ? 'Você deixou de seguir.' : 'Seguindo!');
+async function toggleFollow(id, btn) {
+  if (!currentUser?.id) {
+    showToast('Faça login novamente para seguir leitores.', 'error');
+    return;
+  }
+
+  const isFollowing = btn.classList.contains('following');
+  btn.disabled = true;
+
+  try {
+    const path = `/seguidorUsuario/api/${isFollowing ? 'unfollow' : 'follow'}?seguidorId=${currentUser.id}&seguidoId=${id}`;
+    const response = await apiFetch(path, { method: isFollowing ? 'DELETE' : 'POST' });
+
+    if (!response || !response.ok) {
+      throw new Error('Falha ao atualizar seguidor.');
+    }
+
+    const nextFollowing = !isFollowing;
+    btn.classList.toggle('following', nextFollowing);
+    btn.textContent = nextFollowing ? 'Seguindo' : 'Seguir';
+
+    USERS = USERS.map((u) => {
+      if (Number(u.id) !== Number(id)) return u;
+      return {
+        ...u,
+        isFollowing: nextFollowing,
+        seguidores: Math.max(0, (u.seguidores || 0) + (nextFollowing ? 1 : -1)),
+      };
+    });
+
+    const updatedUser = USERS.find((u) => Number(u.id) === Number(id));
+    const statsEl = document.getElementById(`user-stats-${id}`);
+    if (updatedUser && statsEl) {
+      statsEl.textContent = `${updatedUser.livros} livros · ${updatedUser.seguidores} seguidores`;
+    }
+
+    showToast(nextFollowing ? 'Seguindo!' : 'Você deixou de seguir.');
+  } catch (err) {
+    console.error(err);
+    showToast('Não foi possível atualizar seguidor.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function initSearchPage() {
