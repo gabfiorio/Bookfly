@@ -53,9 +53,9 @@ function renderPost(p) {
   return `
     <div class="post-card" id="post-${p.id}">
       <div class="post-header">
-        <div class="post-avatar" style="background:${p.cor}">${initials(p.nome)}</div>
+        <a class="post-avatar" href="perfil.html?id=${p.userId || p.id}" style="background:${p.cor};text-decoration:none">${initials(p.nome)}</a>
         <div class="post-meta">
-          <div class="post-name">${escapeHtml(p.nome)}</div>
+          <a class="post-name" href="perfil.html?id=${p.userId || p.id}" style="text-decoration:none;color:inherit">${escapeHtml(p.nome)}</a>
           <div class="post-time">há ${p.tempo}</div>
         </div>
       </div>
@@ -286,9 +286,9 @@ document.getElementById('postText').addEventListener('input', function () {
 function renderSuggested() {
   document.getElementById('suggestedUsers').innerHTML = MOCK_USERS.map(u => `
     <div class="suggested-user">
-      <div class="sug-avatar" style="background:${u.cor}">${initials(u.nome)}</div>
+      <a class="sug-avatar" href="perfil.html?id=${u.id}" style="background:${u.cor};text-decoration:none">${initials(u.nome)}</a>
       <div class="sug-info">
-        <div class="sug-name">${escapeHtml(u.nome)}</div>
+        <a class="sug-name" href="perfil.html?id=${u.id}" style="text-decoration:none;color:inherit">${escapeHtml(u.nome)}</a>
         <div class="sug-books">${u.livros} livros</div>
       </div>
       <button class="sug-follow" id="follow-${u.id}" onclick="followUser(${u.id}, this)">Seguir</button>
