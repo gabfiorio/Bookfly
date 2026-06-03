@@ -183,13 +183,13 @@ const doSearch = debounce(function(q) {
   document.getElementById('leitoresResults').innerHTML = users.length
     ? users.map((u, i) => `
         <div class="user-result-card" style="animation-delay:${i*0.05}s">
-          <div class="urc-avatar" style="background:${u.cor}">
+          <a class="urc-avatar" href="perfil.html?id=${u.id}" style="background:${u.cor};text-decoration:none">
             ${u.urlImagem
               ? `<img src="${escapeHtml(u.urlImagem)}" alt="${escapeHtml(u.nome)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
               : initials(u.nome)}
-          </div>
+          </a>
           <div class="urc-info">
-            <div class="urc-name">${escapeHtml(u.nome)}</div>
+            <a class="urc-name" href="perfil.html?id=${u.id}" style="text-decoration:none;color:inherit">${escapeHtml(u.nome)}</a>
             <div class="urc-bio">${escapeHtml(u.bio || 'Sem biografia.')}</div>
             <div class="urc-stats" id="user-stats-${u.id}">${u.livros} livros · ${u.seguidores} seguidores</div>
           </div>
