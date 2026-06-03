@@ -535,3 +535,16 @@ html.dark ::-webkit-scrollbar-thumb { background: var(--purple-light); }
   transition: background var(--transition), transform var(--transition);
 }
 .theme-toggle:hover { background: var(--purple-xlight); transform: scale(1.08); }
+
+.bf-text-more {
+  display: inline;
+  margin-left: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--purple-dark);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.bf-text-more:hover { color: var(--purple); text-decoration: underline; }

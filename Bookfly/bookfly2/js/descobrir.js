@@ -54,7 +54,7 @@ function renderGrid() {
         <a href="livro.html?id=${b.id}" class="dc-title">${escapeHtml(b.titulo)}</a>
         <div class="dc-author">${escapeHtml(b.autor)} · ${b.ano}</div>
         <div class="dc-rating">★ ${b.nota}</div>
-        <p class="dc-desc">${escapeHtml(truncate(b.desc, 80))}</p>
+        <p class="dc-desc">${renderExpandableText(b.desc, `discover-desc-${b.id}`, 120)}</p>
         <div class="dc-actions">
           <a href="livro.html?id=${b.id}" class="bf-btn bf-btn-primary dc-btn">Ver livro</a>
           <button class="dc-wish ${inWish ? 'wished' : ''}" id="wish-${b.id}"

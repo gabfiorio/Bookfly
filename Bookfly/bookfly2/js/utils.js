@@ -330,6 +330,40 @@ function truncate(str, n) {
     : str;
 }
 
+function renderExpandableText(text, id, limit = 320) {
+  const clean = stripHtml(text || '');
+  const safeId = String(id).replace(/[^a-zA-Z0-9_-]/g, '-');
+
+  if (clean.length <= limit) {
+    return `<span>${escapeHtml(clean)}</span>`;
+  }
+
+  return `
+    <span id="${safeId}-short">${escapeHtml(clean.slice(0, limit).trim())}…</span>
+    <span id="${safeId}-full" style="display:none">${escapeHtml(clean)}</span>
+    <button
+      type="button"
+      class="bf-text-more"
+      id="${safeId}-btn"
+      onclick="toggleExpandableText('${safeId}', event)"
+    >Ver mais</button>`;
+}
+
+function toggleExpandableText(id, event) {
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+
+  const shortEl = document.getElementById(`${id}-short`);
+  const fullEl = document.getElementById(`${id}-full`);
+  const btn = document.getElementById(`${id}-btn`);
+  if (!shortEl || !fullEl || !btn) return;
+
+  const expanded = fullEl.style.display !== 'none';
+  shortEl.style.display = expanded ? '' : 'none';
+  fullEl.style.display = expanded ? 'none' : '';
+  btn.textContent = expanded ? 'Ver mais' : 'Ver menos';
+}
+
 function initials(name = '') {
   return name
     .split(' ')

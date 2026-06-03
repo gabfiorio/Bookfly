@@ -66,7 +66,11 @@ function selectBook(id) {
   document.getElementById('previewTitle').textContent  = book.titulo;
   document.getElementById('previewAuthor').textContent = book.autor;
   document.getElementById('previewMeta').textContent   = `${book.ano} · ${book.paginas} páginas`;
-  document.getElementById('previewDesc').textContent   = book.desc;
+  document.getElementById('previewDesc').innerHTML = renderExpandableText(
+    book.desc,
+    `preview-desc-${book.id}`,
+    260
+  );
   document.getElementById('bookPreview').classList.add('visible');
   document.getElementById('ratingSection').classList.add('visible');
   document.getElementById('reviewForm').classList.add('visible');

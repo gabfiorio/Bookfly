@@ -111,7 +111,11 @@ function renderBook() {
   document.getElementById('heroAuthor').textContent = `${book.autor} · ${book.ano}`;
   document.getElementById('heroMeta').textContent = `${book.paginas || 0} páginas · ${book.editora || 'Editora não informada'}`;
   document.getElementById('heroGenre').textContent = book.genero;
-  document.getElementById('heroDesc').textContent = stripHtml(book.desc || book.sinopse || 'Sem sinopse disponível.');
+  document.getElementById('heroDesc').innerHTML = renderExpandableText(
+    book.desc || book.sinopse || 'Sem sinopse disponível.',
+    `book-desc-${bookId}`,
+    420
+  );
 
   if (!coverUrl) {
     applyCover(document.getElementById('heroCover'), book.titulo, book.autor, fallbackCover, coverOptions);
