@@ -52,24 +52,11 @@ async function handleLogin() {
       data.token ||
       data.accessToken ||
       data.access_token;
-// pegar o usuário do response.
-    const user =
-      data.user ||
-      data.usuario || {
-        id: data.id || 1,
-
-        username:
-          data.username ||
-          data.user?.username ||
-          'Usuário',
-      };
-
     if (!token) {
       throw new Error('Token não retornado pelo servidor.');
     }
 
     Auth.setToken(token);
-    Auth.setUser(user);
 
     showToast('Login realizado com sucesso!');
 

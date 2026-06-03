@@ -64,16 +64,7 @@ async function handleCadastro() {
       throw new Error('Token não retornado pelo servidor.');
     }
 
-    const user =
-      data.user ||
-      data.usuario || {
-        id: data.id || 1,
-        username,
-        email
-      };
-
     Auth.setToken(token);
-    Auth.setUser(user);
 
     showToast('Conta criada com sucesso!');
 

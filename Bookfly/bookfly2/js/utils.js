@@ -26,15 +26,30 @@ const Auth = {
   setToken: (t) => localStorage.setItem('bf_token', t),
 
   getUser: () => {
+    const token = Auth.getToken();
+    if (!token) {
+      return null;
+    }
+
     try {
-      return JSON.parse(localStorage.getItem('bf_user'));
+      const [, payload] = token.split('.');
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64.padEnd(base64.length + ((4 - base64.length % 4) % 4), '=');
+      const json = JSON.parse(decodeURIComponent(escape(atob(padded))));
+      const username = json.unique_name || json.name || json.username || '';
+
+      return {
+        id: Number(json.sub || json.nameid || json['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']) || null,
+        email: json.email || '',
+        username,
+        nome: username || json.email || 'Leitor',
+      };
     } catch {
       return null;
     }
   },
 
-  setUser: (u) =>
-    localStorage.setItem('bf_user', JSON.stringify(u)),
+  setUser: () => {},
 
   clear: () => {
     localStorage.removeItem('bf_token');

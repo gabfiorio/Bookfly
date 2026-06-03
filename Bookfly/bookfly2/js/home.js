@@ -2,23 +2,16 @@ if (!Auth.isLogged()) window.location.replace('login.html');
 else if (!Auth.isOnboarded()) window.location.replace('formulario.html');
 
 const user = Auth.getUser() || { nome: 'Leitor', email: '' };
-const savedAvatar = localStorage.getItem('bf_avatar');
 
 // Nav avatar
 const navAvatarEl = document.getElementById('navAvatar');
 if (navAvatarEl) {
-  if (savedAvatar) {
-    navAvatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
-  } else {
-    navAvatarEl.textContent = initials(user.nome);
-  }
+  navAvatarEl.textContent = initials(user.nome);
 }
 
 // Composer avatar
 const composerAvatarEl = document.getElementById('composerAvatar');
-if (savedAvatar) {
-  composerAvatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`;
-} else {
+if (composerAvatarEl) {
   composerAvatarEl.textContent = initials(user.nome);
 }
 
