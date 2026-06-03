@@ -1,19 +1,8 @@
 ﻿requireAuth();
-const user = Auth.getUser() || { nome: 'Leitor', email: '' };
+let user = normalizeProfileUser(Auth.getUser());
 const avatarEl = document.getElementById('profileAvatar');
-const savedAvatar = localStorage.getItem('bf_avatar');
-const savedBio = localStorage.getItem('bf_bio') || '';
-
-if (savedAvatar) {
-  avatarEl.innerHTML = `<img src="${savedAvatar}" alt="avatar"/>`;
-  document.getElementById('removeAvatarBtn').style.display = 'block';
-} else {
-  avatarEl.textContent = initials(user.nome);
-}
-
-document.getElementById('profileName').textContent = user.nome;
-document.getElementById('profileEmail').textContent = user.email;
-document.getElementById('profileBio').textContent = savedBio;
+let profileAvatarSrc = user.avatar || '';
+let profileBio = user.bio || '';
 
 let SHELVES = LibraryData.getShelves();
 const GENRE_OPTIONS = [
@@ -28,6 +17,142 @@ const MY_POSTS = [
   { id: 10, tempo: '2h', texto: 'Começando Duna hoje! Muito animado 🏜️', livro: 'Duna', livroId: 1, stars: null },
   { id: 11, tempo: '1 dia', texto: 'Termino 1984 e fico com um gosto amargo na boca — no bom sentido.', livro: '1984', livroId: 2, stars: 5 },
 ];
+
+function normalizeProfileUser(raw = {}) {
+  const name = firstDefined(
+    raw.nome,
+    raw.name,
+    raw.username,
+    raw.Username,
+    raw.usuario,
+    'Leitor'
+  );
+
+  return {
+    ...raw,
+    id: firstDefined(raw.id, raw.userId, raw.usuarioId, raw._id, null),
+    nome: String(name),
+    email: String(firstDefined(raw.email, raw.mail, '')),
+    bio: firstDefined(raw.bio, raw.biografia, raw.descricao, raw.description, ''),
+    avatar: firstDefined(raw.avatar, raw.foto, raw.fotoPerfil, raw.urlImagem, raw.url_imagem, ''),
+    senhaHash: firstDefined(raw.senhaHash, ''),
+    receberSpoilers: firstDefined(raw.receberSpoilers, true),
+    situacao: firstDefined(raw.situacao, true),
+    criadoEm: firstDefined(raw.criadoEm, raw.createdAt, new Date().toISOString()),
+  };
+}
+
+function profilePayload({
+  nome = user.nome,
+  email = user.email,
+  bio = profileBio,
+  avatar = profileAvatarSrc,
+  senhaHash = user.senhaHash,
+  receberSpoilers = user.receberSpoilers,
+  situacao = user.situacao,
+  criadoEm = user.criadoEm,
+} = {}) {
+  const avatarUrl = String(avatar || '');
+
+  return {
+    email,
+    username: nome,
+    senhaHash: String(senhaHash || ''),
+    biografia: bio || '',
+    urlImagem: avatarUrl.startsWith('data:') ? '' : avatarUrl,
+    receberSpoilers: Boolean(receberSpoilers),
+    situacao: Boolean(situacao),
+    criadoEm: criadoEm || new Date().toISOString(),
+  };
+}
+
+async function tryProfileRequest(paths, options = {}) {
+  for (const path of paths.filter(Boolean)) {
+    try {
+      const response = await apiFetch(path, options);
+      if (!response || !response.ok) continue;
+      const data = await response.json().catch(() => ({}));
+      return data?.user || data?.usuario || data?.data || data;
+    } catch (err) {
+      console.warn(`Perfil: endpoint indisponível (${path}).`, err);
+    }
+  }
+  return null;
+}
+
+function profileEndpoints() {
+  const id = user.id;
+  return [id ? `/usuarios/${id}` : null];
+}
+
+async function fetchProfileFromBackend() {
+  const remoteUser = await tryProfileRequest(profileEndpoints());
+  if (!remoteUser) return;
+
+  user = normalizeProfileUser({ ...user, ...remoteUser });
+  profileAvatarSrc = user.avatar || profileAvatarSrc;
+  profileBio = user.bio || profileBio;
+}
+
+async function saveProfileToBackend(payload) {
+  if (!user.id) {
+    throw new Error('ID do usuário não encontrado.');
+  }
+
+  const response = await apiFetch(`/usuarios/${user.id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+
+  if (!response) {
+    throw new Error('Servidor indisponível.');
+  }
+
+  const rawBody = await response.text().catch(() => '');
+  let data = {};
+  try {
+    data = rawBody ? JSON.parse(rawBody) : {};
+  } catch {
+    data = {};
+  }
+
+  if (!response.ok) {
+    const apiMessage =
+      data.message ||
+      data.erro ||
+      data.error ||
+      rawBody;
+
+    throw new Error(
+      apiMessage ||
+      `Não foi possível atualizar o perfil. HTTP ${response.status}`
+    );
+  }
+
+  return normalizeProfileUser({
+    ...user,
+    ...(data.user || data.usuario || data.data || data),
+    username: payload.username,
+    email: payload.email,
+    biografia: payload.biografia,
+    urlImagem: payload.urlImagem,
+  });
+}
+
+function renderProfileHeader() {
+  if (profileAvatarSrc) {
+    avatarEl.innerHTML = `<img src="${profileAvatarSrc}" alt="avatar"/>`;
+    document.getElementById('removeAvatarBtn').style.display = 'block';
+  } else {
+    avatarEl.innerHTML = '';
+    avatarEl.textContent = initials(user.nome);
+    document.getElementById('removeAvatarBtn').style.display = 'none';
+  }
+
+  document.getElementById('profileName').textContent = user.nome;
+  document.getElementById('profileEmail').textContent = user.email;
+  document.getElementById('profileBio').textContent = profileBio;
+}
 
 function renderPosts() {
   const el = document.getElementById('myPosts');
@@ -340,12 +465,24 @@ function handleAvatarChange(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
-  reader.onload = (ev) => {
+  reader.onload = async (ev) => {
     const src = ev.target.result;
-    localStorage.setItem('bf_avatar', src);
-    avatarEl.innerHTML = `<img src="${src}" alt="avatar"/>`;
-    document.getElementById('removeAvatarBtn').style.display = 'block';
-    showToast('Foto atualizada!');
+    const previousAvatar = profileAvatarSrc;
+    profileAvatarSrc = src;
+    renderProfileHeader();
+
+    try {
+      const updatedUser = await saveProfileToBackend(profilePayload({ avatar: src }));
+      user = normalizeProfileUser(updatedUser);
+      profileAvatarSrc = user.avatar || src;
+      renderProfileHeader();
+      showToast('Foto atualizada!');
+    } catch (err) {
+      console.error(err);
+      profileAvatarSrc = previousAvatar;
+      renderProfileHeader();
+      showToast('API não respondeu ao atualizar a foto.', 'error');
+    }
   };
   reader.readAsDataURL(file);
 }
@@ -355,12 +492,22 @@ function removeAvatar() {
     title: 'Remover foto',
     message: 'Tem certeza que deseja remover sua foto de perfil?',
     confirmLabel: 'Remover',
-    onConfirm: () => {
-      localStorage.removeItem('bf_avatar');
-      avatarEl.innerHTML = '';
-      avatarEl.textContent = initials(user.nome);
-      document.getElementById('removeAvatarBtn').style.display = 'none';
-      showToast('Foto removida.');
+    onConfirm: async () => {
+      const previousAvatar = profileAvatarSrc;
+      profileAvatarSrc = '';
+      renderProfileHeader();
+
+      try {
+        const updatedUser = await saveProfileToBackend(profilePayload({ avatar: '' }));
+        user = normalizeProfileUser({ ...updatedUser, avatar: '', urlImagem: '' });
+        renderProfileHeader();
+        showToast('Foto removida.');
+      } catch (err) {
+        console.error(err);
+        profileAvatarSrc = previousAvatar;
+        renderProfileHeader();
+        showToast('API não respondeu ao remover a foto.', 'error');
+      }
     },
   });
 }
@@ -426,36 +573,90 @@ function addToShelf(key) {
 function editProfile() {
   openModal({
     title: '✏️ Editar perfil',
-    size: 'sm',
+    size: 'md',
     body: `
       <div style="display:flex;flex-direction:column;gap:14px">
         <div>
-          <label class="modal-label">Nome</label>
+          <label class="modal-label">Username</label>
           <input id="edit-nome" class="bf-input" value="${escapeHtml(user.nome)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
         <div>
-          <label class="modal-label">Bio <span style="font-weight:400;color:var(--brown-light)">(opcional)</span></label>
-          <input id="edit-bio" class="bf-input" placeholder="Amante de ficção científica…" value="${escapeHtml(localStorage.getItem('bf_bio') || '')}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+          <label class="modal-label">Email</label>
+          <input id="edit-email" class="bf-input" type="email" value="${escapeHtml(user.email)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
+        <div>
+          <label class="modal-label">Biografia</label>
+          <input id="edit-bio" class="bf-input" placeholder="Amante de ficção científica…" value="${escapeHtml(profileBio)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+        </div>
+        <div>
+          <label class="modal-label">URL da imagem</label>
+          <input id="edit-url-imagem" class="bf-input" placeholder="https://..." value="${escapeHtml(profileAvatarSrc)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--brown-mid)">
+          <input id="edit-receber-spoilers" type="checkbox" ${user.receberSpoilers ? 'checked' : ''}/>
+          Receber spoilers
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--brown-mid)">
+          <input id="edit-situacao" type="checkbox" ${user.situacao ? 'checked' : ''}/>
+          Usuário ativo
+        </label>
+        <input id="edit-senha-hash" type="hidden" value="${escapeHtml(user.senhaHash || '')}"/>
+        <input id="edit-criado-em" type="hidden" value="${escapeHtml(user.criadoEm || new Date().toISOString())}"/>
       </div>`,
     buttons: [
       { label: 'Cancelar', type: 'ghost' },
       {
-        label: 'Salvar', type: 'primary', closeOnClick: false, onClick: (close) => {
+        label: 'Salvar', type: 'primary', closeOnClick: false, onClick: async (close) => {
           const nome = document.getElementById('edit-nome')?.value.trim();
           if (!nome) {
             showToast('Nome obrigatório.', 'error');
             return false;
           }
+          const email = document.getElementById('edit-email')?.value.trim();
+          if (!email) {
+            showToast('Email obrigatório para atualizar na API.', 'error');
+            return false;
+          }
           const bio = document.getElementById('edit-bio')?.value.trim();
-          user.nome = nome;
-          Auth.setUser(user);
-          localStorage.setItem('bf_bio', bio);
-          document.getElementById('profileName').textContent = user.nome;
-          document.getElementById('profileBio').textContent = bio;
-          if (!savedAvatar) avatarEl.textContent = initials(user.nome);
-          close();
-          showToast('Perfil atualizado!');
+          const avatar = document.getElementById('edit-url-imagem')?.value.trim();
+          const senhaHash = document.getElementById('edit-senha-hash')?.value || '';
+          const receberSpoilers = document.getElementById('edit-receber-spoilers')?.checked ?? true;
+          const situacao = document.getElementById('edit-situacao')?.checked ?? true;
+          const criadoEm = document.getElementById('edit-criado-em')?.value || new Date().toISOString();
+
+          try {
+            const updatedUser = await saveProfileToBackend(profilePayload({
+              nome,
+              email,
+              bio,
+              avatar,
+              senhaHash,
+              receberSpoilers,
+              situacao,
+              criadoEm,
+            }));
+            user = normalizeProfileUser({
+              ...updatedUser,
+              nome,
+              email,
+              bio,
+              avatar,
+              receberSpoilers,
+              situacao,
+              criadoEm,
+            });
+            profileBio = bio;
+            profileAvatarSrc = user.avatar || avatar;
+
+            renderProfileHeader();
+            renderPosts();
+            close();
+            showToast('Perfil atualizado!');
+          } catch (err) {
+            console.error(err);
+            showToast(err.message || 'Não foi possível atualizar o perfil.', 'error');
+            return false;
+          }
         },
       },
     ],
@@ -467,11 +668,24 @@ function logout() {
   window.location.href = 'index.html';
 }
 
-renderPosts();
-Object.keys(SHELVES).forEach(renderShelf);
-LibraryData.setShelves(SHELVES);
-renderFolders();
-updateStats();
+async function initProfilePage() {
+  renderProfileHeader();
+  renderPosts();
+  Object.keys(SHELVES).forEach(renderShelf);
+  LibraryData.setShelves(SHELVES);
+  renderFolders();
+  updateStats();
+
+  try {
+    await fetchProfileFromBackend();
+    renderProfileHeader();
+    renderPosts();
+  } catch (err) {
+    console.warn('Perfil: usando dados locais.', err);
+  }
+}
+
+initProfilePage();
 
 document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('themeToggleBtn');
