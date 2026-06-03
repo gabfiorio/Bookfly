@@ -28,6 +28,7 @@ async function loadHomeBooks() {
     const books = await fetchBooksCatalog();
     const carouselBooks = books.slice(0, 14).map((book, index) => ({
       emoji: book.emoji || '📚',
+      coverUrl: book.urlImagem || book.url_imagem || '',
       title: book.titulo,
       bg: ['#c4955a', '#3a3a4a', '#2a3a5c', '#8681BD', '#6b4c3b', '#4a5e3a'][index % 6],
       spine: ['#a07040', '#252530', '#1a2540', '#5f5a8a', '#4a3028', '#303e25'][index % 6],

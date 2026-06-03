@@ -39,24 +39,32 @@ async function loadBooksFromApi() {
 function renderPopular() {
   const popularBooks = getPopularBooks();
 
-  document.getElementById('popularList').innerHTML = popularBooks.map((b, i) => `
-    <a class="book-result-card" href="livro.html?id=${b.id}" style="animation-delay:${i*0.05}s">
-      <div class="brc-cover" id="pop-${b.id}">${b.emoji}</div>
-      <div class="brc-info">
-        <div class="brc-title">${escapeHtml(b.titulo)}</div>
-        <div class="brc-author">${escapeHtml(b.autor)} · ${b.ano}</div>
-        <div class="brc-meta">
-          <span class="brc-genre">${b.genero}</span>
-          <span class="brc-rating">★ ${b.nota}</span>
+  document.getElementById('popularList').innerHTML = popularBooks.map((b, i) => {
+    const coverUrl = b.urlImagem || b.url_imagem || '';
+    const fallbackCover = b.emoji || '📚';
+    return `
+      <a class="book-result-card" href="livro.html?id=${b.id}" style="animation-delay:${i*0.05}s">
+        <div class="brc-cover" id="pop-${b.id}">
+          ${coverHtml(coverUrl, fallbackCover, { width: 52, height: 74, radius: 6, fontSize: 28 })}
         </div>
-      </div>
-    </a>`).join('');
+        <div class="brc-info">
+          <div class="brc-title">${escapeHtml(b.titulo)}</div>
+          <div class="brc-author">${escapeHtml(b.autor)} · ${b.ano}</div>
+          <div class="brc-meta">
+            <span class="brc-genre">${b.genero}</span>
+            <span class="brc-rating">★ ${b.nota}</span>
+          </div>
+        </div>
+      </a>`;
+  }).join('');
 
-  popularBooks.forEach(b => applyCover(
-    document.getElementById(`pop-${b.id}`),
-    b.titulo, b.autor, b.emoji,
-    { width: 52, height: 74, radius: 6, fontSize: 28 }
-  ));
+  popularBooks
+    .filter((b) => !(b.urlImagem || b.url_imagem))
+    .forEach(b => applyCover(
+      document.getElementById(`pop-${b.id}`),
+      b.titulo, b.autor, b.emoji || '📚',
+      { width: 52, height: 74, radius: 6, fontSize: 28 }
+    ));
 }
 
 const doSearch = debounce(function(q) {
@@ -74,9 +82,14 @@ const doSearch = debounce(function(q) {
   document.getElementById('clearBtn').style.display     = 'block';
 
   document.getElementById('livrosResults').innerHTML = books.length
-    ? books.map((b, i) => `
+    ? books.map((b, i) => {
+        const coverUrl = b.urlImagem || b.url_imagem || '';
+        const fallbackCover = b.emoji || '📚';
+        return `
         <a class="book-result-card" href="livro.html?id=${b.id}" style="animation-delay:${i*0.05}s">
-          <div class="brc-cover" id="brc-${b.id}">${b.emoji}</div>
+          <div class="brc-cover" id="brc-${b.id}">
+            ${coverHtml(coverUrl, fallbackCover, { width: 52, height: 74, radius: 6, fontSize: 28 })}
+          </div>
           <div class="brc-info">
             <div class="brc-title">${escapeHtml(b.titulo)}</div>
             <div class="brc-author">${escapeHtml(b.autor)} · ${b.ano}</div>
@@ -86,15 +99,18 @@ const doSearch = debounce(function(q) {
             </div>
           </div>
           <div class="brc-pages">${b.paginas} pág.</div>
-        </a>`).join('')
+        </a>`;
+      }).join('')
     : '<div class="no-results">Nenhum livro encontrado.</div>';
 
   // Capas assíncronas nos resultados
-  books.forEach(b => applyCover(
-    document.getElementById(`brc-${b.id}`),
-    b.titulo, b.autor, b.emoji,
-    { width: 52, height: 74, radius: 6, fontSize: 28 }
-  ));
+  books
+    .filter((b) => !(b.urlImagem || b.url_imagem))
+    .forEach(b => applyCover(
+      document.getElementById(`brc-${b.id}`),
+      b.titulo, b.autor, b.emoji || '📚',
+      { width: 52, height: 74, radius: 6, fontSize: 28 }
+    ));
 
   document.getElementById('leitoresResults').innerHTML = users.length
     ? users.map((u, i) => `

@@ -41,10 +41,14 @@ function renderGrid() {
   const grid = document.getElementById('booksGrid');
   grid.innerHTML = books.map((b, i) => {
     const inWish = wishlist.has(b.id);
+    const coverUrl = b.urlImagem || b.url_imagem || '';
+    const fallbackCover = b.emoji || '📚';
     return `
       <div class="discover-card" style="animation-delay:${i*0.04}s">
         <a href="livro.html?id=${b.id}" class="dc-cover-link">
-          <div class="dc-cover" id="dc-cover-${b.id}">${b.emoji}</div>
+          <div class="dc-cover" id="dc-cover-${b.id}">
+            ${coverHtml(coverUrl, fallbackCover, { width: '100%', height: '100%', radius: 0, fontSize: 52 })}
+          </div>
         </a>
         <div class="dc-genre-tag" style="background:${GENRE_COLORS[b.genero]+'22'};color:${GENRE_COLORS[b.genero] || 'var(--purple)'}">${b.genero}</div>
         <a href="livro.html?id=${b.id}" class="dc-title">${escapeHtml(b.titulo)}</a>
@@ -62,11 +66,13 @@ function renderGrid() {
   }).join('');
 
   // Capas assíncronas
-  books.forEach(b => applyCover(
-    document.getElementById(`dc-cover-${b.id}`),
-    b.titulo, b.autor, b.emoji,
-    { width: '100%', height: '100%', radius: 0, fontSize: 52 }
-  ));
+  books
+    .filter((b) => !(b.urlImagem || b.url_imagem))
+    .forEach(b => applyCover(
+      document.getElementById(`dc-cover-${b.id}`),
+      b.titulo, b.autor, b.emoji || '📚',
+      { width: '100%', height: '100%', radius: 0, fontSize: 52 }
+    ));
 }
 
 async function loadCatalog() {

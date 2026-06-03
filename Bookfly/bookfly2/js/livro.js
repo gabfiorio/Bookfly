@@ -4,6 +4,8 @@ if (!Auth.isLogged()) {
 
 async function handleLivro() {
   const titulo = document.getElementById('titulo')?.value.trim();
+  const url_imagem = document.getElementById('url_imagem')?.value.trim();
+  const categoria = document.getElementById('categoria')?.value.trim();
   const autor = document.getElementById('autor')?.value.trim();
   const ano = document.getElementById('ano')?.value.trim();
   const paginas = document.getElementById('paginas')?.value.trim();
@@ -20,7 +22,7 @@ async function handleLivro() {
 }
 
 
-const AVATAR_COLORS = ['#8681BD','#F7A8B8','#F2956A','#A8D5BA','#F5D97E','#b0acda'];
+const AVATAR_COLORS = ['#8681BD', '#F7A8B8', '#F2956A', '#A8D5BA', '#F5D97E', '#b0acda'];
 
 const params = new URLSearchParams(window.location.search);
 const bookId = parseInt(params.get('id')) || 1;
@@ -58,9 +60,13 @@ async function initBookPage() {
 }
 
 function shelfBookPayload() {
+  const coverUrl = book.urlImagem || book.url_imagem || '';
+
   return {
     id: bookId,
     titulo: book.titulo,
+    categoria: book.categoria,
+    urlImagem: coverUrl,
     autor: book.autor,
     emoji: book.emoji,
     genero: book.genero,
@@ -97,15 +103,19 @@ function renderBook() {
   document.title = `Bookfly — ${book.titulo}`;
   syncStatusFromShelves();
 
-  document.getElementById('heroCover').innerHTML = coverHtml(null, book.emoji, { width: 120, height: 174, radius: 10, fontSize: 64 });
-  document.getElementById('heroTitle').textContent  = book.titulo;
+  const coverUrl = book.urlImagem || book.url_imagem || '';
+  const fallbackCover = book.emoji || '📚';
+  const coverOptions = { width: 120, height: 174, radius: 10, fontSize: 64 };
+  document.getElementById('heroCover').innerHTML = coverHtml(coverUrl, fallbackCover, coverOptions);
+  document.getElementById('heroTitle').textContent = book.titulo;
   document.getElementById('heroAuthor').textContent = `${book.autor} · ${book.ano}`;
-  document.getElementById('heroMeta').textContent   = `${book.paginas || 0} páginas · ${book.editora || 'Editora não informada'}`;
-  document.getElementById('heroGenre').textContent  = book.genero;
-  document.getElementById('heroDesc').textContent   = stripHtml(book.desc || book.sinopse || 'Sem sinopse disponível.');
+  document.getElementById('heroMeta').textContent = `${book.paginas || 0} páginas · ${book.editora || 'Editora não informada'}`;
+  document.getElementById('heroGenre').textContent = book.genero;
+  document.getElementById('heroDesc').textContent = stripHtml(book.desc || book.sinopse || 'Sem sinopse disponível.');
 
-  applyCover(document.getElementById('heroCover'), book.titulo, book.autor, book.emoji,
-    { width: 120, height: 174, radius: 10, fontSize: 64 });
+  if (!coverUrl) {
+    applyCover(document.getElementById('heroCover'), book.titulo, book.autor, fallbackCover, coverOptions);
+  }
 
   // Rating
   const starsRounded = Math.round(book.mediaGlobal || 0);
@@ -134,7 +144,7 @@ function renderShelfActions() {
 }
 
 function shelfStatusIcon() {
-  return ['📌','🔖','📖','✅'][userStatus];
+  return ['📌', '🔖', '📖', '✅'][userStatus];
 }
 
 function cycleStatus() {
@@ -150,7 +160,7 @@ function openStatusMenu() {
     size: 'sm',
     body: SHELF_STATUS.map((s, i) => `
       <div class="status-menu-item ${i === userStatus ? 'active' : ''}" onclick="setStatus(${i})">
-        <span>${['📌','🔖','📖','✅'][i]}</span> ${s}
+        <span>${['📌', '🔖', '📖', '✅'][i]}</span> ${s}
         ${i === userStatus ? '<span class="status-check">✓</span>' : ''}
       </div>`).join(''),
     buttons: [],
@@ -228,12 +238,12 @@ function submitBookComment() {
 
 function renderReviews() {
   const reviews = getCommunityReviews();
-  const total   = reviews.length;
-  const avg     = total ? (reviews.reduce((s, r) => s + r.stars, 0) / total).toFixed(1) : '-';
+  const total = reviews.length;
+  const avg = total ? (reviews.reduce((s, r) => s + r.stars, 0) / total).toFixed(1) : '-';
   const avgStars = total ? Math.round(Number(avg)) : 0;
 
   // Distribuição de estrelas
-  const dist = [5,4,3,2,1].map(s => ({
+  const dist = [5, 4, 3, 2, 1].map(s => ({
     s, count: reviews.filter(r => r.stars === s).length,
     pct: total ? Math.round(reviews.filter(r => r.stars === s).length / total * 100) : 0,
   }));
@@ -258,7 +268,7 @@ function renderReviews() {
       <h4>Deixe seu comentário</h4>
       <div class="review-composer-row">
         <div class="review-star-picker" role="radiogroup" aria-label="Escolha a nota">
-          ${[1,2,3,4,5].map((stars) => `
+          ${[1, 2, 3, 4, 5].map((stars) => `
             <button
               type="button"
               data-stars="${stars}"
@@ -276,8 +286,8 @@ function renderReviews() {
       <button class="bf-btn bf-btn-primary review-publish-btn" onclick="submitBookComment()">Publicar comentário</button>
     </div>
     ${reviews.length
-    ? reviews.map((r, i) => `
-        <div class="review-card" style="animation-delay:${i*0.06}s">
+      ? reviews.map((r, i) => `
+        <div class="review-card" style="animation-delay:${i * 0.06}s">
           <div class="review-header">
             <div class="review-avatar" style="background:${r.cor}">${initials(r.nome)}</div>
             <div class="review-meta">
@@ -291,7 +301,7 @@ function renderReviews() {
             ♡ <span>${r.curtidas}</span>
           </button>
         </div>`).join('')
-    : `<div class="empty-state"><div>💬</div><p>Seja o primeiro a comentar este livro!</p></div>`}`;
+      : `<div class="empty-state"><div>💬</div><p>Seja o primeiro a comentar este livro!</p></div>`}`;
 }
 
 function syncReviewStarsPicker(activeStars = REVIEW_STARS) {
@@ -315,7 +325,7 @@ function previewReviewStars(stars) {
 }
 
 function likeReview(btn, base) {
-  const span   = btn.querySelector('span');
+  const span = btn.querySelector('span');
   const isLiked = btn.dataset.liked === '1';
   btn.dataset.liked = isLiked ? '0' : '1';
   btn.classList.toggle('liked', !isLiked);
@@ -327,14 +337,16 @@ function renderReaders() {
 }
 
 function renderDetails() {
+  const coverUrl = book.urlImagem || book.url_imagem || '';
   const items = [
-    { label: 'Título',    value: book.titulo },
-    { label: 'Autor',     value: book.autor },
-    { label: 'Gênero',    value: book.genero },
-    { label: 'Ano',       value: book.ano },
-    { label: 'Páginas',   value: book.paginas },
-    { label: 'Editora',   value: book.editora },
-    { label: 'ISBN',      value: book.isbn },
+    { label: 'Título', value: book.titulo },
+    { label: 'Autor', value: book.autor },
+    { label: 'Imagem', value: coverUrl },
+    { label: 'Gênero', value: book.genero },
+    { label: 'Ano', value: book.ano },
+    { label: 'Páginas', value: book.paginas },
+    { label: 'Editora', value: book.editora },
+    { label: 'ISBN', value: book.isbn },
   ];
   document.getElementById('detailsGrid').innerHTML = items.map(d => `
     <div class="detail-item">

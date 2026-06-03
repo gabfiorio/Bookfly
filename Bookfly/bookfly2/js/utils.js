@@ -223,7 +223,7 @@ function normalizeBookFromApi(raw, index = 0) {
       raw.dataLancamento || null,
 
     urlImagem:
-      firstDefined(raw.urlImagem, raw.imagem, raw.coverUrl, ''),
+      firstDefined(raw.urlImagem, raw.url_imagem, raw.imagem, raw.coverUrl, ''),
 
     genero:
       firstDefined(raw.categoria?.nome, raw.genero, raw.genre, 'Geral'),
@@ -621,7 +621,7 @@ const LibraryData = (function () {
       mediaGlobal: toNumber(firstDefined(raw.mediaGlobal, raw.media, raw.averageRating)) || 0,
       totalAvaliacoes: toNumber(firstDefined(raw.totalAvaliacoes, raw.ratingCount, raw.reviewCount)) || 0,
       nota: toNumber(firstDefined(raw.nota, raw.rating)) || 0,
-      urlImagem: firstDefined(raw.urlImagem, raw.imagem, raw.coverUrl, '') || '',
+      urlImagem: firstDefined(raw.urlImagem, raw.url_imagem, raw.imagem, raw.coverUrl, '') || '',
       sinopse: firstDefined(raw.sinopse, raw.description, raw.descricao, '') || '',
       // keep any extra fields for future migrations
       _raw: raw,
