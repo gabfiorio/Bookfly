@@ -4,14 +4,7 @@ requireAuth();
 const AVATAR_COLORS = ['#8681BD','#F7A8B8','#F2956A','#A8D5BA','#F5D97E','#b0acda'];
 
 let BOOKS = [];
-
-const USERS = [
-  { id:2, nome:'Maria Oliveira', livros:48, seguidores:120, cor:AVATAR_COLORS[1], bio:'Fanática em FC e fantasia 🚀' },
-  { id:3, nome:'João Silva',     livros:31, seguidores:67,  cor:AVATAR_COLORS[2], bio:'Clássicos da literatura' },
-  { id:4, nome:'Ana Costa',      livros:72, seguidores:204, cor:AVATAR_COLORS[3], bio:'Leio de tudo um pouco 📚' },
-  { id:5, nome:'Pedro Mendes',   livros:19, seguidores:34,  cor:AVATAR_COLORS[0], bio:'Tolkien é vida' },
-  { id:6, nome:'Lucas Ferreira', livros:55, seguidores:98,  cor:AVATAR_COLORS[4], bio:'Literatura brasileira ❤️' },
-];
+let USERS = [];
 
 let activeTab = 'livros';
 
@@ -33,6 +26,41 @@ async function loadBooksFromApi() {
   }
 
   BOOKS = [];
+}
+
+function normalizeUserFromApi(raw, index = 0) {
+  const nome = String(firstDefined(raw.username, raw.nome, raw.name, raw.email, 'Leitor'));
+
+  return {
+    id: firstDefined(raw.id, raw.userId, raw.usuarioId, index + 1),
+    nome,
+    livros: raw.livros || raw.totalLivros || 0,
+    seguidores: raw.seguidores || raw.totalSeguidores || 0,
+    cor: AVATAR_COLORS[index % AVATAR_COLORS.length],
+    bio: firstDefined(raw.biografia, raw.bio, raw.descricao, raw.email, ''),
+    urlImagem: firstDefined(raw.urlImagem, raw.url_imagem, raw.avatar, ''),
+  };
+}
+
+async function loadUsersFromApi() {
+  try {
+    const response = await apiFetch('/usuarios');
+    if (!response || response.status === 204) {
+      USERS = [];
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error('Falha ao carregar usuários.');
+    }
+
+    const payload = await response.json().catch(() => []);
+    const list = extractArrayPayload(payload);
+    USERS = list.map(normalizeUserFromApi);
+  } catch (err) {
+    console.warn('Busca: usuários indisponíveis.', err);
+    USERS = [];
+  }
 }
 
 // Render popular books on load
@@ -115,10 +143,14 @@ const doSearch = debounce(function(q) {
   document.getElementById('leitoresResults').innerHTML = users.length
     ? users.map((u, i) => `
         <div class="user-result-card" style="animation-delay:${i*0.05}s">
-          <div class="urc-avatar" style="background:${u.cor}">${initials(u.nome)}</div>
+          <div class="urc-avatar" style="background:${u.cor}">
+            ${u.urlImagem
+              ? `<img src="${escapeHtml(u.urlImagem)}" alt="${escapeHtml(u.nome)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"/>`
+              : initials(u.nome)}
+          </div>
           <div class="urc-info">
             <div class="urc-name">${escapeHtml(u.nome)}</div>
-            <div class="urc-bio">${escapeHtml(u.bio)}</div>
+            <div class="urc-bio">${escapeHtml(u.bio || 'Sem biografia.')}</div>
             <div class="urc-stats">${u.livros} livros · ${u.seguidores} seguidores</div>
           </div>
           <button class="sug-follow" id="uf-${u.id}" onclick="toggleFollow(${u.id}, this)">Seguir</button>
@@ -160,7 +192,10 @@ function toggleFollow(id, btn) {
 }
 
 async function initSearchPage() {
-  await loadBooksFromApi();
+  await Promise.all([
+    loadBooksFromApi(),
+    loadUsersFromApi(),
+  ]);
   renderPopular();
 
   const urlQ = new URLSearchParams(window.location.search).get('q');

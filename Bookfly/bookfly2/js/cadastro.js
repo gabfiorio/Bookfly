@@ -58,8 +58,11 @@ async function handleCadastro() {
     const token =
       data.token ||
       data.accessToken ||
-      data.access_token ||
-      'mock-token-123';
+      data.access_token;
+
+    if (!token) {
+      throw new Error('Token não retornado pelo servidor.');
+    }
 
     const user =
       data.user ||
