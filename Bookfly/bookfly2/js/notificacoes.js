@@ -23,14 +23,19 @@ function renderNotifs(list) {
     container.innerHTML = `<div class="notif-empty"><div>🔔</div><p>Nenhuma notificação aqui.</p></div>`;
     return;
   }
+  
   container.innerHTML = list.map((n, i) => `
     <div class="notif-item ${n.lida ? 'read' : 'unread'}" id="notif-${n.id}" style="animation-delay:${i*0.05}s">
-      <div class="notif-avatar" style="background:${n.cor}">
-        ${n.nome === 'Bookfly' ? '🦉' : initials(n.nome)}
-      </div>
+      ${n.nome === 'Bookfly'
+        ? `<div class="notif-avatar" style="background:${n.cor}">🦉</div>`
+        : `<a class="notif-avatar" href="perfil.html?id=${n.usuarioId || ''}" style="background:${n.cor};text-decoration:none">${initials(n.nome)}</a>`
+      }
       <div class="notif-body">
         <div class="notif-text">
-          <strong>${escapeHtml(n.nome)}</strong> <span>${n.msg}</span>
+          ${n.nome === 'Bookfly'
+            ? `<strong>${escapeHtml(n.nome)}</strong>`
+            : `<a href="perfil.html?id=${n.usuarioId || ''}" style="text-decoration:none;color:inherit;font-weight:600">${escapeHtml(n.nome)}</a>`
+          } <span>${n.msg}</span>
         </div>
         <div class="notif-time">${n.tempo} atrás</div>
       </div>
