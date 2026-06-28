@@ -55,30 +55,8 @@
 
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('posts', this)">Posts</button>
-      <button class="tab-btn" onclick="switchTab('lidos', this)">📚 Lidos</button>
-      <button class="tab-btn" onclick="switchTab('lendo', this)">📖 Lendo</button>
-      <button class="tab-btn" onclick="switchTab('quererlev', this)">🔖 Quero ler</button>
-      <button class="tab-btn" onclick="switchTab('avaliados', this)">⭐ Avaliados</button>
+      <button class="tab-btn" onclick="switchTab('Estantes', this)">📚 Estantes</button>
       <button class="tab-btn" onclick="switchTab('pastas', this)">🗂️ Pastas</button>
-    </div>
-
-    <div class="tab-pane active" id="tab-posts">
-      <div id="myPosts"></div>
-    </div>
-
-    <div class="tab-pane" id="tab-lidos">
-      <div class="shelf-grid" id="shelf-lidos"></div>
-      <button class="add-book-btn" onclick="addToShelf('lidos')">+ Adicionar livro lido</button>
-    </div>
-
-    <div class="tab-pane" id="tab-lendo">
-      <div class="shelf-grid" id="shelf-lendo"></div>
-      <button class="add-book-btn" onclick="addToShelf('lendo')">+ Adicionar livro que estou lendo</button>
-    </div>
-
-    <div class="tab-pane" id="tab-quererlev">
-      <div class="shelf-grid" id="shelf-quererlev"></div>
-      <button class="add-book-btn" onclick="addToShelf('quererlev')">+ Adicionar à lista</button>
     </div>
 
     <div class="tab-pane" id="tab-avaliados">
@@ -86,6 +64,24 @@
       <button class="add-book-btn" onclick="window.location.href='avaliar.html'">+ Avaliar novo livro</button>
     </div>
 
+
+     <div class="tab-pane" id="tab-Estantes">
+      <div class="estantes-toolbar">
+        <div class="estantes-mode" role="tablist" aria-label="Tipo de estante">
+          <button class="estantes-mode-btn active" onclick="setFolderMode('todas', this)">🗂️ Todas</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="bf-btn bf-btn-primary" onclick="createestantes()">+ Nova estante</button>
+          <button class="bf-btn bf-btn-ghost"   onclick="renderEstantes()">Atualizar</button>
+        </div>
+      </div>
+      <div id="estantesGrid"   class="estantes-grid"></div>
+      <div id="estantesDetail" class="estantes-detail" style="display:none"></div>
+    </div>
+
+
+
+    <!-- Pastas tab -->
     <div class="tab-pane" id="tab-pastas">
       <div class="folders-toolbar">
         <div class="folders-mode" role="tablist" aria-label="Tipo de pasta">
@@ -101,6 +97,7 @@
       <div id="foldersGrid" class="folders-grid"></div>
       <div id="folderDetail" class="folder-detail" style="display:none"></div>
     </div>
+
 
   </div>
 

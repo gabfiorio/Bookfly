@@ -1,139 +1,63 @@
 ﻿requireAuth();
 
-/* ── Detecta se é perfil próprio ou de outro usuário ── */
-const _urlParams   = new URLSearchParams(window.location.search);
-const _viewedId    = _urlParams.get('id') ? Number(_urlParams.get('id')) : null;
-const _selfUser    = Auth.getUser();
-const IS_OWN       = !_viewedId || Number(_viewedId) === Number(_selfUser?.id);
+// ─────────────────────────────────────────────
+// ESTADO E CONSTANTES
+// ─────────────────────────────────────────────
 
-let user              = normalizeProfileUser(_selfUser);
-const avatarEl        = document.getElementById('profileAvatar');
-let profileAvatarSrc  = user.avatar || '';
-let profileBio        = user.bio    || '';
+const _urlParams  = new URLSearchParams(window.location.search);
+const _viewedId   = _urlParams.get('id') ? Number(_urlParams.get('id')) : null;
+const _selfUser   = Auth.getUser();
+const IS_OWN      = !_viewedId || Number(_viewedId) === Number(_selfUser?.id);
 
-let SHELVES        = IS_OWN ? LibraryData.getShelves() : { lidos: [], lendo: [], quererlev: [] };
+let user             = normalizeProfileUser(_selfUser);
+const avatarEl       = document.getElementById('profileAvatar');
+let profileAvatarSrc = user.avatar || '';
+let profileBio       = user.bio    || '';
+
+let SHELVES          = IS_OWN ? LibraryData.getShelves() : { lidos: [], lendo: [], quererlev: [] };
+let ESTANTES         = [];          // lista de estantes da API
+let ESTANTE_ABERTA   = null;        // objeto da estante aberta
+let ESTANTE_LIVROS   = [];          // livros da estante aberta
+
 const GENRE_OPTIONS = [
   'Romance','Fantasia','Distopia','Terror','Ficção Científica',
   'Suspense','Biografia','Não ficção','Outro',
 ];
 
-let FOLDER_MODE   = 'todas';
-let OPEN_FOLDER_ID = null;
-
 const MY_POSTS = [
-  { id: 10, tempo: '2h',    texto: 'Começando Duna hoje! Muito animado 🏜️',            livro: 'Duna', livroId: 1, stars: null },
-  { id: 11, tempo: '1 dia', texto: 'Termino 1984 e fico com um gosto amargo na boca — no bom sentido.', livro: '1984', livroId: 2, stars: 5 },
+  { id: 10, tempo: '2h',    texto: 'Começando Duna hoje! Muito animado 🏜️',                             livro: 'Duna', livroId: 1, stars: null },
+  { id: 11, tempo: '1 dia', texto: 'Termino 1984 e fico com um gosto amargo na boca — no bom sentido.', livro: '1984', livroId: 2, stars: 5   },
 ];
 
-/* ── Adapta a UI para perfil alheio ── */
-function applyViewMode() {
-  if (IS_OWN) return;
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
 
-  /* Esconde controles de edição */
-  const editBtn  = document.querySelector('.profile-actions .bf-btn[onclick="editProfile()"]');
-  if (editBtn)  editBtn.remove();
-
-  const avatarEditBtn   = document.querySelector('.avatar-edit-btn');
-  const removeAvatarBtn = document.getElementById('removeAvatarBtn');
-  const avatarInput     = document.getElementById('avatarInput');
-  if (avatarEditBtn)   avatarEditBtn.remove();
-  if (removeAvatarBtn) removeAvatarBtn.style.display = 'none';
-  if (avatarInput)     avatarInput.remove();
-  /* Torna o avatar não-clicável */
-  if (avatarEl) avatarEl.onclick = null;
-
-  /* Esconde botões exclusivos do próprio perfil */
-  const addShelfBtns = document.querySelectorAll('.add-book-btn');
-  addShelfBtns.forEach(b => b.style.display = 'none');
-
-  ['avaliar.html', 'desafio.html', 'formulario.html'].forEach(href => {
-    const btn = document.querySelector(`.profile-actions a[href="${href}"]`);
-    if (btn) btn.remove();
-  });
-
-  /* Injeta botão Seguir */
-  const actionsEl = document.querySelector('.profile-actions');
-  if (actionsEl) {
-    const followBtn = document.createElement('button');
-    followBtn.id        = 'followBtn';
-    followBtn.className = 'bf-btn bf-btn-primary';
-    followBtn.style     = 'font-size:13px;padding:9px 20px;';
-    followBtn.textContent = 'Seguir';
-    followBtn.onclick = toggleFollow;
-    actionsEl.prepend(followBtn);
-    checkFollowStatus();
-  }
+function getToken() {
+  return localStorage.getItem('bf_token');
 }
 
-async function checkFollowStatus() {
-  if (!_selfUser?.id || !_viewedId) return;
-  try {
-    const res = await apiFetch(`/seguidorUsuario/api/seguindo?usuarioId=${_selfUser.id}`);
-    if (!res || !res.ok) return;
-    const payload = await res.json().catch(() => []);
-    const list    = extractArrayPayload(payload);
-    const isFollowing = list.some(
-      (item) => Number(firstDefined(item.seguidoID, item.SeguidoID, item.seguidoId)) === _viewedId
-    );
-    const btn = document.getElementById('followBtn');
-    if (btn) {
-      btn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
-      btn.classList.toggle('bf-btn-ghost',   isFollowing);
-      btn.classList.toggle('bf-btn-primary', !isFollowing);
-    }
-  } catch (err) {
-    console.warn('Perfil: não foi possível verificar seguindo.', err);
-  }
+function authHeaders() {
+  const token = getToken();
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
 }
-
-async function toggleFollow() {
-  const btn = document.getElementById('followBtn');
-  if (!btn || !_viewedId || !_selfUser?.id) return;
-
-  const isFollowing = btn.textContent.trim() === 'Seguindo';
-  btn.disabled = true;
-
-  try {
-    if (isFollowing) {
-      await apiFetch(`/seguidorUsuario/api/deixarSeguir`, {
-        method: 'DELETE',
-        body: JSON.stringify({ seguidorId: _selfUser.id, seguidoId: _viewedId }),
-      });
-    } else {
-      await apiFetch(`/seguidorUsuario/api/seguir`, {
-        method: 'POST',
-        body: JSON.stringify({ seguidorId: _selfUser.id, seguidoId: _viewedId }),
-      });
-    }
-    btn.textContent = isFollowing ? 'Seguir' : 'Seguindo';
-    btn.classList.toggle('bf-btn-ghost',   !isFollowing);
-    btn.classList.toggle('bf-btn-primary', isFollowing);
-    showToast(isFollowing ? 'Você deixou de seguir.' : 'Seguindo!');
-    updateFollowStats();
-  } catch (err) {
-    showToast('Não foi possível atualizar.', 'error');
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-/* ─────────────────────────────────────────
-   Funções existentes (sem alteração de lógica)
-───────────────────────────────────────── */
 
 function normalizeProfileUser(raw = {}) {
   const name = firstDefined(raw.nome, raw.name, raw.username, raw.Username, raw.usuario, 'Leitor');
   return {
     ...raw,
-    id:             firstDefined(raw.id, raw.userId, raw.usuarioId, raw._id, null),
-    nome:           String(name),
-    email:          String(firstDefined(raw.email, raw.mail, '')),
-    bio:            firstDefined(raw.bio, raw.biografia, raw.descricao, raw.description, ''),
-    avatar:         firstDefined(raw.avatar, raw.foto, raw.fotoPerfil, raw.urlImagem, raw.url_imagem, ''),
-    senhaHash:      firstDefined(raw.senhaHash, ''),
-    receberSpoilers:firstDefined(raw.receberSpoilers, true),
-    situacao:       firstDefined(raw.situacao, true),
-    criadoEm:       firstDefined(raw.criadoEm, raw.createdAt, new Date().toISOString()),
+    id:              firstDefined(raw.id, raw.userId, raw.usuarioId, raw._id, null),
+    nome:            String(name),
+    email:           String(firstDefined(raw.email, raw.mail, '')),
+    bio:             firstDefined(raw.bio, raw.biografia, raw.descricao, raw.description, ''),
+    avatar:          firstDefined(raw.avatar, raw.foto, raw.fotoPerfil, raw.urlImagem, raw.url_imagem, ''),
+    senhaHash:       firstDefined(raw.senhaHash, ''),
+    receberSpoilers: firstDefined(raw.receberSpoilers, true),
+    situacao:        firstDefined(raw.situacao, true),
+    criadoEm:        firstDefined(raw.criadoEm, raw.createdAt, new Date().toISOString()),
   };
 }
 
@@ -155,11 +79,96 @@ function profilePayload({
   };
 }
 
+// ─────────────────────────────────────────────
+// VIEW MODE (perfil alheio)
+// ─────────────────────────────────────────────
+
+function applyViewMode() {
+  if (IS_OWN) return;
+
+  document.querySelector('.profile-actions .bf-btn[onclick="editProfile()"]')?.remove();
+  document.querySelector('.avatar-edit-btn')?.remove();
+  document.getElementById('avatarInput')?.remove();
+  const removeBtn = document.getElementById('removeAvatarBtn');
+  if (removeBtn) removeBtn.style.display = 'none';
+  if (avatarEl) avatarEl.onclick = null;
+  document.querySelectorAll('.add-book-btn').forEach((b) => (b.style.display = 'none'));
+  ['avaliar.html','desafio.html','formulario.html'].forEach((href) => {
+    document.querySelector(`.profile-actions a[href="${href}"]`)?.remove();
+  });
+
+  const actionsEl = document.querySelector('.profile-actions');
+  if (actionsEl) {
+    const followBtn = document.createElement('button');
+    followBtn.id          = 'followBtn';
+    followBtn.className   = 'bf-btn bf-btn-primary';
+    followBtn.style       = 'font-size:13px;padding:9px 20px;';
+    followBtn.textContent = 'Seguir';
+    followBtn.onclick     = toggleFollow;
+    actionsEl.prepend(followBtn);
+    checkFollowStatus();
+  }
+}
+
+async function checkFollowStatus() {
+  if (!_selfUser?.id || !_viewedId) return;
+  try {
+    const res = await apiFetch(`/seguidorUsuario/api/seguindo?usuarioId=${_selfUser.id}`);
+    if (!res?.ok) return;
+    const payload = await res.json().catch(() => []);
+    const list = extractArrayPayload(payload);
+    const isFollowing = list.some(
+      (item) => Number(firstDefined(item.seguidoID, item.SeguidoID, item.seguidoId)) === _viewedId
+    );
+    const btn = document.getElementById('followBtn');
+    if (btn) {
+      btn.textContent = isFollowing ? 'Seguindo' : 'Seguir';
+      btn.classList.toggle('bf-btn-ghost',   isFollowing);
+      btn.classList.toggle('bf-btn-primary', !isFollowing);
+    }
+  } catch (err) {
+    console.warn('Perfil: não foi possível verificar seguindo.', err);
+  }
+}
+
+async function toggleFollow() {
+  const btn = document.getElementById('followBtn');
+  if (!btn || !_viewedId || !_selfUser?.id) return;
+  const isFollowing = btn.textContent.trim() === 'Seguindo';
+  btn.disabled = true;
+  try {
+    if (isFollowing) {
+      await apiFetch(`/seguidorUsuario/api/deixarSeguir`, {
+        method: 'DELETE',
+        body: JSON.stringify({ seguidorId: _selfUser.id, seguidoId: _viewedId }),
+      });
+    } else {
+      await apiFetch(`/seguidorUsuario/api/seguir`, {
+        method: 'POST',
+        body: JSON.stringify({ seguidorId: _selfUser.id, seguidoId: _viewedId }),
+      });
+    }
+    btn.textContent = isFollowing ? 'Seguir' : 'Seguindo';
+    btn.classList.toggle('bf-btn-ghost',   !isFollowing);
+    btn.classList.toggle('bf-btn-primary', isFollowing);
+    showToast(isFollowing ? 'Você deixou de seguir.' : 'Seguindo!');
+    updateFollowStats();
+  } catch {
+    showToast('Não foi possível atualizar.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ─────────────────────────────────────────────
+// PERFIL — BACKEND
+// ─────────────────────────────────────────────
+
 async function tryProfileRequest(paths, options = {}) {
   for (const path of paths.filter(Boolean)) {
     try {
       const response = await apiFetch(path, options);
-      if (!response || !response.ok) continue;
+      if (!response?.ok) continue;
       const data = await response.json().catch(() => ({}));
       return data?.user || data?.usuario || data?.data || data;
     } catch (err) {
@@ -169,15 +178,10 @@ async function tryProfileRequest(paths, options = {}) {
   return null;
 }
 
-function profileEndpoints() {
-  const id = IS_OWN ? user.id : _viewedId;
-  return [id ? `/usuarios/${id}` : null];
-}
-
 async function fetchProfileFromBackend() {
-  const remoteUser = await tryProfileRequest(profileEndpoints());
+  const id = IS_OWN ? user.id : _viewedId;
+  const remoteUser = await tryProfileRequest([id ? `/usuarios/${id}` : null]);
   if (!remoteUser) return;
-
   user             = normalizeProfileUser({ ...(IS_OWN ? user : {}), ...remoteUser });
   profileAvatarSrc = user.avatar || profileAvatarSrc;
   profileBio       = user.bio    || profileBio;
@@ -185,25 +189,20 @@ async function fetchProfileFromBackend() {
 
 async function saveProfileToBackend(payload) {
   if (!user.id) throw new Error('ID do usuário não encontrado.');
-
   const response = await apiFetch(`/usuarios/${user.id}`, {
     method: 'PUT',
     body: JSON.stringify(payload),
   });
-
   if (!response) throw new Error('Servidor indisponível.');
-
   const rawBody = await response.text().catch(() => '');
   let data = {};
   try { data = rawBody ? JSON.parse(rawBody) : {}; } catch { data = {}; }
-
   if (!response.ok) {
     throw new Error(
       data.message || data.erro || data.error || rawBody ||
       `Não foi possível atualizar o perfil. HTTP ${response.status}`
     );
   }
-
   return normalizeProfileUser({
     ...user,
     ...(data.user || data.usuario || data.data || data),
@@ -212,12 +211,16 @@ async function saveProfileToBackend(payload) {
   });
 }
 
+// ─────────────────────────────────────────────
+// PERFIL — RENDER HEADER
+// ─────────────────────────────────────────────
+
 function renderProfileHeader() {
   if (profileAvatarSrc) {
     avatarEl.innerHTML = `<img src="${profileAvatarSrc}" alt="avatar"/>`;
     if (IS_OWN) document.getElementById('removeAvatarBtn').style.display = 'block';
   } else {
-    avatarEl.innerHTML  = '';
+    avatarEl.innerHTML   = '';
     avatarEl.textContent = initials(user.nome);
     if (IS_OWN) document.getElementById('removeAvatarBtn').style.display = 'none';
   }
@@ -226,8 +229,13 @@ function renderProfileHeader() {
   document.getElementById('profileBio').textContent   = profileBio;
 }
 
+// ─────────────────────────────────────────────
+// POSTS
+// ─────────────────────────────────────────────
+
 function renderPosts() {
   const el = document.getElementById('myPosts');
+  if (!el) return;
   if (!MY_POSTS.length) {
     el.innerHTML = `<div class="empty-shelf"><div class="emoji">📝</div>${IS_OWN ? 'Você ainda não fez' : 'Este leitor ainda não fez'} nenhum post.</div>`;
     return;
@@ -244,15 +252,381 @@ function renderPosts() {
     </div>`).join('');
 }
 
+// ─────────────────────────────────────────────
+// ESTANTES — API
+// ─────────────────────────────────────────────
+
+async function fetchEstantes() {
+  try {
+    const res = await fetch('https://bookfly-wp02.onrender.com/estantes', {
+      headers: authHeaders(),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const dados = await res.json();
+    // filtra apenas as estantes do usuário logado
+    return (Array.isArray(dados) ? dados : []).filter(
+      (e) => Number(e.usuarioId?.id ?? e.usuarioId) === Number(user.id)
+    );
+  } catch (err) {
+    console.error('Erro ao buscar estantes:', err);
+    return [];
+  }
+}
+
+async function fetchLivrosDaEstante(estanteId) {
+  try {
+    const res = await fetch(`https://bookfly-wp02.onrender.com/estante-livros/${estanteId}`, {
+      headers: authHeaders(),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const dados = await res.json();
+    return Array.isArray(dados) ? dados : [dados];
+  } catch (err) {
+    console.error('Erro ao buscar livros da estante:', err);
+    return [];
+  }
+}
+
+async function criarEstante({ nome, descricao, privada = false }) {
+  const res = await fetch('https://bookfly-wp02.onrender.com/estantes', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({
+      usuarioId: user.id,
+      nome,
+      descricao,
+      privada,
+      criadoEm: new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) {
+    const erro = await res.text().catch(() => '');
+    throw new Error(erro || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+async function adicionarLivroNaEstante(estanteId, livroId) {
+  const res = await fetch('https://bookfly-wp02.onrender.com/estante-livros', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({
+      estanteId,
+      livroId,
+      ativo: true,
+      statusLeitura: 1,
+      paginaAtual: 0,
+      favorito: false,
+      iniciadoEm: new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) {
+    const erro = await res.text().catch(() => '');
+    throw new Error(erro || `HTTP ${res.status}`);
+  }
+  return await res.json();
+}
+
+async function removerLivroNaEstante(estanteLivroId) {
+  const res = await fetch(`https://bookfly-wp02.onrender.com/estante-livros/${estanteLivroId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+}
+
+async function atualizarProgressoEstante(estanteLivroId, paginaAtual) {
+  const res = await fetch(`https://bookfly-wp02.onrender.com/estante-livros/${estanteLivroId}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify({ paginaAtual }),
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — RENDER GRID
+// ─────────────────────────────────────────────
+
+async function renderEstantes() {
+  const grid = document.getElementById('estantesGrid');
+  const detail = document.getElementById('estantesDetail');
+  if (!grid) return;
+
+  grid.innerHTML = `<div class="skel" style="height:120px;grid-column:1/-1"></div>`;
+  if (detail) detail.style.display = 'none';
+
+  ESTANTES = await fetchEstantes();
+
+  if (!ESTANTES.length) {
+    grid.innerHTML = `
+      <div class="empty-shelf" style="grid-column:1/-1">
+        <div class="emoji">📚</div>
+        ${IS_OWN ? 'Você ainda não criou nenhuma estante.' : 'Nenhuma estante pública disponível.'}
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = ESTANTES.map((e, i) => `
+    <article class="folder-card" style="animation-delay:${i * 0.05}s">
+      <header class="folder-head">
+        <h4 class="folder-name">📚 ${escapeHtml(e.nome)}</h4>
+        ${e.privada ? '<span class="folder-type-chip">🔒 Privada</span>' : '<span class="folder-type-chip">🌐 Pública</span>'}
+      </header>
+      <p class="folder-desc">${escapeHtml(e.descricao || '')}</p>
+      <div class="folder-actions-row">
+        <button class="bf-btn bf-btn-primary" style="font-size:12px;padding:7px 12px"
+                onclick="abrirEstante(${e.id})">Abrir</button>
+        ${IS_OWN ? `<button class="bf-btn bf-btn-ghost" style="font-size:12px;padding:7px 12px"
+                onclick="confirmarRemoverEstante(${e.id})">Apagar</button>` : ''}
+      </div>
+    </article>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — DETALHE
+// ─────────────────────────────────────────────
+
+async function abrirEstante(estanteId) {
+  const detail = document.getElementById('estantesDetail');
+  const grid   = document.getElementById('estantesGrid');
+  if (!detail) return;
+
+  ESTANTE_ABERTA = ESTANTES.find((e) => e.id === estanteId) || null;
+  detail.style.display = 'block';
+  detail.innerHTML = `<div class="skel" style="height:200px"></div>`;
+  if (grid) grid.style.display = 'none';
+
+  ESTANTE_LIVROS = await fetchLivrosDaEstante(estanteId);
+
+  detail.innerHTML = `
+    <div class="folder-detail-head">
+      <div>
+        <h3 class="folder-detail-title">📚 ${escapeHtml(ESTANTE_ABERTA?.nome || 'Estante')}</h3>
+        <p class="folder-detail-sub">${ESTANTE_LIVROS.length} livro${ESTANTE_LIVROS.length !== 1 ? 's' : ''} nesta estante</p>
+      </div>
+      <div class="folder-detail-actions">
+        <button class="bf-btn bf-btn-ghost" style="font-size:12px;padding:8px 12px"
+                onclick="fecharEstante()">← Voltar</button>
+      </div>
+    </div>
+    <div class="folder-books">
+      ${ESTANTE_LIVROS.length
+        ? ESTANTE_LIVROS.map((el) => buildEstanteLivroCard(el)).join('')
+        : `<div class="empty-shelf"><div class="emoji">📂</div>Esta estante está vazia.</div>`}
+    </div>`;
+}
+
+function buildEstanteLivroCard(el) {
+  const livro = el.livro || {};
+  const titulo = livro.titulo || 'Sem título';
+  const autor  = livro.autor  || 'Autor desconhecido';
+  const capa   = livro.urlImagem || '';
+  const paginas = livro.totalPaginas || 0;
+  const pagAtual = el.paginaAtual || 0;
+  const pct = paginas ? Math.round((pagAtual / paginas) * 100) : 0;
+
+  return `
+    <div class="folder-book-item">
+      <span class="folder-book-emoji">
+        ${capa ? `<img src="${capa}" alt="${escapeHtml(titulo)}" style="width:40px;height:56px;object-fit:cover;border-radius:4px"/>` : '📘'}
+      </span>
+      <span class="folder-book-meta">
+        <span class="folder-book-title">${escapeHtml(titulo)}</span>
+        <span class="folder-book-author">${escapeHtml(autor)}</span>
+        ${paginas ? `
+          <div class="progress-wrap" style="margin-top:4px">
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <span class="progress-label">${pagAtual}/${paginas} pág.</span>
+          </div>` : ''}
+      </span>
+      <div class="folder-book-row-actions">
+        <button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px"
+                onclick="goToBook(${livro.id || 0})">Abrir</button>
+        ${IS_OWN && paginas ? `
+          <button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px"
+                  onclick="editarProgressoEstante(${el.id}, ${pagAtual}, ${paginas})">✏️</button>` : ''}
+        ${IS_OWN ? `
+          <button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px"
+                  onclick="confirmarRemoverLivroEstante(${el.id})">Remover</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function fecharEstante() {
+  ESTANTE_ABERTA = null;
+  ESTANTE_LIVROS = [];
+  const detail = document.getElementById('estantesDetail');
+  const grid   = document.getElementById('estantesGrid');
+  if (detail) { detail.style.display = 'none'; detail.innerHTML = ''; }
+  if (grid)   grid.style.display = '';
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — CRIAR
+// ─────────────────────────────────────────────
+
+function createestantes() {
+  if (!IS_OWN) return;
+  openModal({
+    title: '📚 Nova estante',
+    size: 'sm',
+    body: `
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label class="modal-label">Nome *</label>
+          <input id="est-nome" class="bf-input" placeholder="Ex: Favoritos de Sci-Fi"
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+        </div>
+        <div>
+          <label class="modal-label">Descrição</label>
+          <input id="est-desc" class="bf-input" placeholder="Uma breve descrição..."
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--brown-mid)">
+          <input id="est-privada" type="checkbox"/> Estante privada
+        </label>
+      </div>`,
+    buttons: [
+      { label: 'Cancelar', type: 'ghost' },
+      {
+        label: 'Criar', type: 'primary', closeOnClick: false,
+        onClick: async (close) => {
+          const nome     = document.getElementById('est-nome')?.value.trim();
+          const descricao = document.getElementById('est-desc')?.value.trim();
+          const privada  = document.getElementById('est-privada')?.checked || false;
+          if (!nome) { showToast('Digite um nome para a estante.', 'error'); return false; }
+          try {
+            const nova = await criarEstante({ nome, descricao, privada });
+            ESTANTES.unshift(nova);
+            close();
+            showToast('Estante criada!');
+            renderEstantes();
+          } catch (err) {
+            console.error(err);
+            showToast('Erro ao criar estante.', 'error');
+            return false;
+          }
+        },
+      },
+    ],
+  });
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — REMOVER ESTANTE
+// ─────────────────────────────────────────────
+
+function confirmarRemoverEstante(estanteId) {
+  const estante = ESTANTES.find((e) => e.id === estanteId);
+  confirmModal({
+    title: 'Apagar estante',
+    message: `Tem certeza que deseja apagar <strong>${escapeHtml(estante?.nome || 'esta estante')}</strong>?`,
+    confirmLabel: 'Apagar',
+    onConfirm: async () => {
+      try {
+        const res = await fetch(`https://bookfly-wp02.onrender.com/estantes/${estanteId}`, {
+          method: 'DELETE',
+          headers: authHeaders(),
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        ESTANTES = ESTANTES.filter((e) => e.id !== estanteId);
+        showToast('Estante apagada.');
+        renderEstantes();
+      } catch (err) {
+        console.error(err);
+        showToast('Erro ao apagar estante.', 'error');
+      }
+    },
+  });
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — REMOVER LIVRO
+// ─────────────────────────────────────────────
+
+function confirmarRemoverLivroEstante(estanteLivroId) {
+  confirmModal({
+    title: 'Remover livro',
+    message: 'Tem certeza que deseja remover este livro da estante?',
+    confirmLabel: 'Remover',
+    onConfirm: async () => {
+      try {
+        await removerLivroNaEstante(estanteLivroId);
+        showToast('Livro removido da estante.');
+        if (ESTANTE_ABERTA) await abrirEstante(ESTANTE_ABERTA.id);
+      } catch (err) {
+        console.error(err);
+        showToast('Erro ao remover livro.', 'error');
+      }
+    },
+  });
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — EDITAR PROGRESSO
+// ─────────────────────────────────────────────
+
+function editarProgressoEstante(estanteLivroId, pagAtual, totalPaginas) {
+  if (!IS_OWN) return;
+  openModal({
+    title: '📖 Atualizar progresso',
+    size: 'sm',
+    body: `
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <label style="font-size:13px;font-weight:600;color:var(--brown-mid)">Página atual</label>
+        <input id="modal-pagina" class="bf-input" type="number" min="0" max="${totalPaginas}"
+               value="${pagAtual}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+        <p style="font-size:12px;color:var(--brown-light)">${totalPaginas} páginas no total</p>
+      </div>`,
+    buttons: [
+      { label: 'Cancelar', type: 'ghost' },
+      {
+        label: 'Salvar', type: 'primary', closeOnClick: false,
+        onClick: async (close) => {
+          const val = parseInt(document.getElementById('modal-pagina')?.value);
+          if (isNaN(val) || val < 0) { showToast('Número inválido.', 'error'); return false; }
+          try {
+            await atualizarProgressoEstante(estanteLivroId, val);
+            if (ESTANTE_ABERTA) await abrirEstante(ESTANTE_ABERTA.id);
+            close();
+            showToast('Progresso atualizado!');
+          } catch (err) {
+            console.error(err);
+            showToast('Erro ao atualizar progresso.', 'error');
+            return false;
+          }
+        },
+      },
+    ],
+  });
+}
+
+// ─────────────────────────────────────────────
+// ESTANTES — MODO (toolbar)
+// ─────────────────────────────────────────────
+
+function setFolderMode(mode, btn) {
+  document.querySelectorAll('.estantes-mode-btn').forEach((el) => el.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  // filtro visual futuro por modo — por ora só recarrega
+  renderEstantes();
+}
+
+// ─────────────────────────────────────────────
+// SHELVES LOCAIS (lidos/lendo/quererlev)
+// ─────────────────────────────────────────────
+
 function renderShelf(key) {
   const books = SHELVES[key] || [];
   const el    = document.getElementById(`shelf-${key}`);
+  if (!el) return;
   if (!books.length) {
     el.innerHTML = `<div class="empty-shelf" style="grid-column:1/-1"><div class="emoji">📚</div>Nenhum livro aqui ainda.</div>`;
     return;
   }
   el.innerHTML = books.map((b, i) => {
-    const coverId     = `shelf-cover-${key}-${i}`;
+    const coverId = `shelf-cover-${key}-${i}`;
     const progressBar = (key === 'lendo' && b.pagina != null && b.total) ? `
       <div class="progress-wrap">
         <div class="progress-bar"><div class="progress-fill" style="width:${Math.round((b.pagina / b.total) * 100)}%"></div></div>
@@ -285,17 +659,19 @@ function editProgress(e, idx, key) {
   e.stopPropagation();
   const book = SHELVES[key][idx];
   openModal({
-    title: `📖 Progresso — ${book.titulo}`,
-    size: 'sm',
+    title: `📖 Progresso — ${book.titulo}`, size: 'sm',
     body: `
       <div style="display:flex;flex-direction:column;gap:16px">
         <label style="font-size:13px;font-weight:600;color:var(--brown-mid)">Página atual</label>
-        <input id="modal-pagina" class="bf-input" type="number" min="0" max="${book.total || 9999}" value="${book.pagina || 0}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+        <input id="modal-pagina" class="bf-input" type="number" min="0" max="${book.total || 9999}"
+               value="${book.pagina || 0}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         ${book.total ? `<p style="font-size:12px;color:var(--brown-light)">${book.total} páginas no total</p>` : ''}
       </div>`,
     buttons: [
       { label: 'Cancelar', type: 'ghost' },
-      { label: 'Salvar', type: 'primary', closeOnClick: false, onClick: (close) => {
+      {
+        label: 'Salvar', type: 'primary', closeOnClick: false,
+        onClick: (close) => {
           const val = parseInt(document.getElementById('modal-pagina')?.value);
           if (isNaN(val) || val < 0) { showToast('Número inválido.', 'error'); return false; }
           book.pagina = val;
@@ -308,6 +684,10 @@ function editProgress(e, idx, key) {
     ],
   });
 }
+
+// ─────────────────────────────────────────────
+// STATS
+// ─────────────────────────────────────────────
 
 function updateStats() {
   document.getElementById('statLidos').textContent     = SHELVES.lidos.length;
@@ -342,26 +722,29 @@ async function updateFollowStats() {
   if (seguindoEl)   seguindoEl.textContent   = seguindo;
 }
 
+// ─────────────────────────────────────────────
+// PASTAS (mantidas, sem alteração de lógica)
+// ─────────────────────────────────────────────
+
+let FOLDER_MODE    = 'todas';
+let OPEN_FOLDER_ID = null;
+
 function renderFolders() {
   if (!IS_OWN) return;
   const grid = document.getElementById('foldersGrid');
   if (!grid) return;
-
   const allFolders = LibraryData.getFolders();
   const folders = allFolders
-    .filter((f) => (FOLDER_MODE === 'todas' ? true : f.type === FOLDER_MODE))
+    .filter((f) => FOLDER_MODE === 'todas' ? true : f.type === FOLDER_MODE)
     .sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR'));
-
   const allBooks = LibraryData.listUniqueBooks(SHELVES);
   const byId = new Map(allBooks.map((b) => [b.id, b]));
-
   if (!folders.length) {
-    grid.innerHTML = `<div class="empty-shelf" style="grid-column:1/-1"><div class="emoji">🗂️</div>Nenhuma pasta criada para este filtro.</div>`;
+    grid.innerHTML = `<div class="empty-shelf" style="grid-column:1/-1"><div class="emoji">🗂️</div>Nenhuma pasta criada.</div>`;
     const detail = document.getElementById('folderDetail');
     if (detail) detail.style.display = 'none';
     return;
   }
-
   grid.innerHTML = folders.map((folder, i) => {
     const count = (folder.bookIds || []).filter((id) => byId.has(id)).length;
     const badge = folder.type === 'autor' ? '✍️ Autor' : '📚 Gênero';
@@ -380,7 +763,7 @@ function renderFolders() {
   }).join('');
 }
 
-function setFolderMode(mode, btn) {
+function setFolderModeLocal(mode, btn) {
   FOLDER_MODE = mode;
   document.querySelectorAll('.folder-mode-btn').forEach((el) => el.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -395,7 +778,8 @@ function createFolder() {
       <div style="display:flex;flex-direction:column;gap:12px">
         <div>
           <label class="modal-label">Nome da pasta *</label>
-          <input id="folder-name" class="bf-input" placeholder="Ex: Favoritos de Ficção" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+          <input id="folder-name" class="bf-input" placeholder="Ex: Favoritos de Ficção"
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
         <div>
           <label class="modal-label">Tipo</label>
@@ -407,7 +791,9 @@ function createFolder() {
       </div>`,
     buttons: [
       { label: 'Cancelar', type: 'ghost' },
-      { label: 'Criar', type: 'primary', closeOnClick: false, onClick: (close) => {
+      {
+        label: 'Criar', type: 'primary', closeOnClick: false,
+        onClick: (close) => {
           const name = document.getElementById('folder-name')?.value.trim();
           const type = document.getElementById('folder-type')?.value || 'genero';
           if (!name) { showToast('Digite um nome para a pasta.', 'error'); return false; }
@@ -443,11 +829,9 @@ function openFolder(folderId) {
   const folder = LibraryData.getFolders().find((f) => f.id === folderId);
   const detail = document.getElementById('folderDetail');
   if (!folder || !detail) return;
-
   const allBooks = LibraryData.listUniqueBooks(SHELVES);
   const byId = new Map(allBooks.map((b) => [b.id, b]));
   const books = (folder.bookIds || []).map((id) => byId.get(id)).filter(Boolean);
-
   detail.style.display = 'block';
   detail.innerHTML = `
     <div class="folder-detail-head">
@@ -456,7 +840,8 @@ function openFolder(folderId) {
         <p class="folder-detail-sub">${books.length} livro${books.length > 1 ? 's' : ''} nesta pasta</p>
       </div>
       <div class="folder-detail-actions">
-        ${IS_OWN ? `<button class="bf-btn bf-btn-primary" style="font-size:12px;padding:8px 12px" onclick="addBookToFolderPrompt('${folder.id}')">+ Adicionar livro</button>` : ''}
+        ${IS_OWN ? `<button class="bf-btn bf-btn-primary" style="font-size:12px;padding:8px 12px"
+                onclick="addBookToFolderPrompt('${folder.id}')">+ Adicionar livro</button>` : ''}
         <button class="bf-btn bf-btn-ghost" style="font-size:12px;padding:8px 12px" onclick="closeFolder()">Fechar</button>
       </div>
     </div>
@@ -469,10 +854,13 @@ function openFolder(folderId) {
             <span class="folder-book-author">${escapeHtml(book.autor || 'Autor desconhecido')}</span>
           </span>
           <div class="folder-book-row-actions">
-            <button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px" onclick="goToBook(${book.id || 0})">Abrir</button>
-            ${IS_OWN ? `<button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px" onclick="removeBookFromFolder(${book.id || 0}, '${folder.id}')">Remover</button>` : ''}
+            <button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px"
+                    onclick="goToBook(${book.id || 0})">Abrir</button>
+            ${IS_OWN ? `<button class="bf-btn bf-btn-ghost" style="font-size:11px;padding:6px 10px"
+                    onclick="removeBookFromFolder(${book.id || 0}, '${folder.id}')">Remover</button>` : ''}
           </div>
-        </div>`).join('') : `<div class="empty-shelf" style="padding:18px 8px"><div class="emoji">📂</div>Esta pasta está vazia.</div>`}
+        </div>`).join('')
+      : `<div class="empty-shelf" style="padding:18px 8px"><div class="emoji">📂</div>Esta pasta está vazia.</div>`}
     </div>`;
 }
 
@@ -523,12 +911,21 @@ function removeBookFromFolder(bookId, folderId) {
   showToast('Livro removido da pasta.');
 }
 
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+
 function switchTab(key, btn) {
   document.querySelectorAll('.tab-pane').forEach((p) => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
   document.getElementById(`tab-${key}`).classList.add('active');
   btn.classList.add('active');
+  if (key === 'Estantes') renderEstantes();
 }
+
+// ─────────────────────────────────────────────
+// AVATAR
+// ─────────────────────────────────────────────
 
 function triggerAvatarUpload() {
   if (!IS_OWN) return;
@@ -584,59 +981,9 @@ function removeAvatar() {
   });
 }
 
-function addToShelf(key) {
-  if (!IS_OWN) return;
-  openModal({
-    title: '📚 Adicionar livro', size: 'md',
-    body: `
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <div>
-          <label class="modal-label">Título *</label>
-          <input id="add-titulo" class="bf-input" placeholder="Ex: Dom Casmurro" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
-        </div>
-        <div>
-          <label class="modal-label">Autor</label>
-          <input id="add-autor" class="bf-input" placeholder="Ex: Machado de Assis" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
-        </div>
-        <div>
-          <label class="modal-label">Gênero</label>
-          <select id="add-genero" class="bf-input" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)">
-            ${GENRE_OPTIONS.map((g) => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('')}
-          </select>
-        </div>
-        ${key === 'lendo' ? `
-        <div>
-          <label class="modal-label">Total de páginas</label>
-          <input id="add-total" class="bf-input" type="number" min="1" placeholder="Ex: 350" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
-        </div>` : ''}
-      </div>`,
-    buttons: [
-      { label: 'Cancelar', type: 'ghost' },
-      { label: 'Adicionar', type: 'primary', closeOnClick: false, onClick: (close) => {
-          const titulo = document.getElementById('add-titulo')?.value.trim();
-          const autor  = document.getElementById('add-autor')?.value.trim() || '';
-          const genero = document.getElementById('add-genero')?.value || 'Sem gênero';
-          if (!titulo) { showToast('Título é obrigatório.', 'error'); return false; }
-          const emojis = ['📘','📗','📕','📙','📓'];
-          const emoji  = emojis[Math.floor(Math.random() * emojis.length)];
-          const entry  = { id: Date.now(), titulo, autor, emoji, genero };
-          if (key === 'lendo') {
-            entry.pagina = 0;
-            entry.total  = parseInt(document.getElementById('add-total')?.value) || null;
-          }
-          SHELVES[key].push(entry);
-          LibraryData.setShelves(SHELVES);
-          renderShelf(key);
-          renderFolders();
-          if (OPEN_FOLDER_ID) openFolder(OPEN_FOLDER_ID);
-          updateStats();
-          close();
-          showToast('Livro adicionado!');
-        },
-      },
-    ],
-  });
-}
+// ─────────────────────────────────────────────
+// EDITAR PERFIL
+// ─────────────────────────────────────────────
 
 function editProfile() {
   if (!IS_OWN) return;
@@ -646,19 +993,23 @@ function editProfile() {
       <div style="display:flex;flex-direction:column;gap:14px">
         <div>
           <label class="modal-label">Username</label>
-          <input id="edit-nome" class="bf-input" value="${escapeHtml(user.nome)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+          <input id="edit-nome" class="bf-input" value="${escapeHtml(user.nome)}"
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
         <div>
           <label class="modal-label">Email</label>
-          <input id="edit-email" class="bf-input" type="email" value="${escapeHtml(user.email)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+          <input id="edit-email" class="bf-input" type="email" value="${escapeHtml(user.email)}"
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
         <div>
           <label class="modal-label">Biografia</label>
-          <input id="edit-bio" class="bf-input" placeholder="Amante de ficção científica…" value="${escapeHtml(profileBio)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+          <input id="edit-bio" class="bf-input" placeholder="Amante de ficção científica…" value="${escapeHtml(profileBio)}"
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
         <div>
           <label class="modal-label">URL da imagem</label>
-          <input id="edit-url-imagem" class="bf-input" placeholder="https://..." value="${escapeHtml(profileAvatarSrc)}" style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
+          <input id="edit-url-imagem" class="bf-input" placeholder="https://..." value="${escapeHtml(profileAvatarSrc)}"
+                 style="border-radius:var(--radius-md);border:1.5px solid var(--beige-dark)"/>
         </div>
         <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--brown-mid)">
           <input id="edit-receber-spoilers" type="checkbox" ${user.receberSpoilers ? 'checked' : ''}/>
@@ -673,21 +1024,23 @@ function editProfile() {
       </div>`,
     buttons: [
       { label: 'Cancelar', type: 'ghost' },
-      { label: 'Salvar', type: 'primary', closeOnClick: false, onClick: async (close) => {
+      {
+        label: 'Salvar', type: 'primary', closeOnClick: false,
+        onClick: async (close) => {
           const nome  = document.getElementById('edit-nome')?.value.trim();
-          if (!nome)  { showToast('Nome obrigatório.', 'error'); return false; }
           const email = document.getElementById('edit-email')?.value.trim();
-          if (!email) { showToast('Email obrigatório para atualizar na API.', 'error'); return false; }
-          const bio    = document.getElementById('edit-bio')?.value.trim();
-          const avatar = document.getElementById('edit-url-imagem')?.value.trim();
+          if (!nome)  { showToast('Nome obrigatório.', 'error'); return false; }
+          if (!email) { showToast('Email obrigatório.', 'error'); return false; }
+          const bio             = document.getElementById('edit-bio')?.value.trim();
+          const avatar          = document.getElementById('edit-url-imagem')?.value.trim();
           const senhaHash       = document.getElementById('edit-senha-hash')?.value || '';
           const receberSpoilers = document.getElementById('edit-receber-spoilers')?.checked ?? true;
           const situacao        = document.getElementById('edit-situacao')?.checked ?? true;
           const criadoEm        = document.getElementById('edit-criado-em')?.value || new Date().toISOString();
           try {
-            const updatedUser = await saveProfileToBackend(profilePayload({
-              nome, email, bio, avatar, senhaHash, receberSpoilers, situacao, criadoEm,
-            }));
+            const updatedUser = await saveProfileToBackend(
+              profilePayload({ nome, email, bio, avatar, senhaHash, receberSpoilers, situacao, criadoEm })
+            );
             user = normalizeProfileUser({ ...updatedUser, nome, email, bio, avatar, receberSpoilers, situacao, criadoEm });
             profileBio       = bio;
             profileAvatarSrc = user.avatar || avatar;
@@ -706,10 +1059,18 @@ function editProfile() {
   });
 }
 
+// ─────────────────────────────────────────────
+// LOGOUT
+// ─────────────────────────────────────────────
+
 function logout() {
   Auth.clear();
   window.location.href = 'index.html';
 }
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
 
 async function initProfilePage() {
   applyViewMode();

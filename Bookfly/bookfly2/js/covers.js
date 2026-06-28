@@ -24,7 +24,7 @@ async function fetchCoverUrl(titulo, autor) {
     if (!res.ok) return null;
     const data  = await res.json();
     const links = data?.items?.[0]?.volumeInfo?.imageLinks;
-    // Prefere thumbnail maior; força HTTPS e remove borda/zoom do Google
+   
     const raw   = links?.thumbnail || links?.smallThumbnail || null;
     const cover = raw ? raw.replace('http://', 'https://').replace('&edge=curl', '') + '&fife=w300' : null;
     if (cover) CoverCache.set(key, cover);

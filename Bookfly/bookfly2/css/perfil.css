@@ -97,6 +97,7 @@ body { background: var(--beige); }
   gap: 4px;
 }
 
+
 .folder-mode-btn {
   border: none;
   background: transparent;
@@ -266,6 +267,389 @@ body { background: var(--beige); }
   font-size: 12px;
   color: var(--brown-light);
   margin-top: 2px;
+}
+
+/* ─────────────────────────────────────────────
+   PASTAS
+───────────────────────────────────────────── */
+
+.folder-mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--brown-light);
+  font-size: 12.5px;
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.folder-mode-btn.active {
+  background: var(--purple);
+  color: white;
+  font-weight: 600;
+}
+
+.folders-refresh {
+  font-size: 12.5px;
+  padding: 8px 14px;
+}
+
+.folders-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.folder-card {
+  background: var(--beige-card);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp 0.35s ease both;
+}
+
+.folder-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.folder-name {
+  font-size: 13.5px;
+  color: var(--brown);
+}
+
+.folder-count {
+  font-size: 11.5px;
+  color: var(--brown-light);
+}
+
+.folder-meta-row {
+  margin-bottom: 10px;
+}
+
+.folder-type-chip {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--purple-xlight);
+  color: var(--purple-dark);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.folder-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.folder-actions-row .bf-btn {
+  flex: 1;
+}
+
+.folder-books {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.folder-book-item {
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  padding: 8px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.folder-book-item:hover {
+  border-color: var(--purple-light);
+  transform: translateY(-1px);
+}
+
+.folder-book-emoji {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.folder-book-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.folder-book-title {
+  font-size: 12.5px;
+  color: var(--brown);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.folder-book-author {
+  font-size: 11px;
+  color: var(--brown-light);
+}
+
+.folder-book-row-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.folder-detail {
+  margin-top: 12px;
+  background: var(--beige-card);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.2s ease both;
+}
+
+.folder-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.folder-detail-title {
+  font-size: 15px;
+  color: var(--brown);
+}
+
+.folder-detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.folder-detail-sub {
+  font-size: 12px;
+  color: var(--brown-light);
+  margin-top: 2px;
+}
+
+.folder-desc {
+  font-size: 12px;
+  color: var(--brown-light);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+/* ─────────────────────────────────────────────
+   ESTANTES
+───────────────────────────────────────────── */
+
+.estantes-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.estantes-mode {
+  display: flex;
+  gap: 4px;
+}
+
+.estantes-mode-btn {
+  border: none;
+  background: transparent;
+  color: var(--brown-light);
+  font-size: 12.5px;
+  padding: 7px 12px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.estantes-mode-btn.active {
+  background: var(--purple);
+  color: white;
+  font-weight: 600;
+}
+
+.estantes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.estante-card {
+  background: var(--beige-card);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeUp 0.35s ease both;
+}
+
+.estante-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.estante-name {
+  font-size: 13.5px;
+  color: var(--brown);
+  font-weight: 600;
+}
+
+.estante-meta-row {
+  margin-bottom: 10px;
+}
+
+.estante-type-chip {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--purple-xlight);
+  color: var(--purple-dark);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.estante-desc {
+  font-size: 12px;
+  color: var(--brown-light);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.estante-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.estante-actions-row .bf-btn {
+  flex: 1;
+}
+
+.estantes-detail {
+  margin-top: 12px;
+  background: var(--beige-card);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.2s ease both;
+}
+
+.estante-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.estante-detail-title {
+  font-size: 15px;
+  color: var(--brown);
+  font-weight: 600;
+}
+
+.estante-detail-sub {
+  font-size: 12px;
+  color: var(--brown-light);
+  margin-top: 2px;
+}
+
+.estante-detail-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.estante-books {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.estante-book-item {
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius-md);
+  background: var(--white);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: border-color var(--transition), transform var(--transition);
+}
+
+.estante-book-item:hover {
+  border-color: var(--purple-light);
+  transform: translateY(-1px);
+}
+
+.estante-book-cover {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--beige);
+}
+
+.estante-book-cover img {
+  width: 40px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.estante-book-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.estante-book-title {
+  font-size: 12.5px;
+  color: var(--brown);
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.estante-book-author {
+  font-size: 11px;
+  color: var(--brown-light);
+}
+
+.estante-book-row-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
 .post-card {

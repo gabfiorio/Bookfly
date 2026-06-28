@@ -13,6 +13,8 @@ const API_ENDPOINTS =
     login: '/auth/login',
     cadastro: '/usuarios',
     livros: '/livros',
+    comunidades: '/comunidades',
+    avaliacoes: '/avaliacoes-livros',
 
   };
 
@@ -22,9 +24,7 @@ const API_ENDPOINTS =
 
 const Auth = {
   getToken: () => localStorage.getItem('bf_token'),
-
   setToken: (t) => localStorage.setItem('bf_token', t),
-
   getUser: () => {
     const token = Auth.getToken();
     if (!token) {
@@ -102,11 +102,8 @@ function requireAuth() {
    ============================================================ */
 
 async function apiFetch(path, options = {}) {
-
   const token = Auth.getToken();
-
   const url = `${API_BASE}${path}`;
-
   try {
 
     const response = await fetch(url, {

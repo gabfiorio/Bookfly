@@ -9,7 +9,7 @@ const GENRE_COLORS = {
   'Mistério':'#ccc8bc',
 };
 
-let activeGenre = 'Todos';
+let generoAtivo = 'Todos';
 const wishlist   = new Set(JSON.parse(localStorage.getItem('bf_wishlist') || '[]'));
 
 function getGenresFromCatalog() {
@@ -19,7 +19,7 @@ function getGenresFromCatalog() {
 
 function renderGenres() {
   document.getElementById('genreFilters').innerHTML = getGenresFromCatalog().map(g => `
-    <button class="genre-btn ${g === activeGenre ? 'active' : ''}"
+    <button class="genre-btn ${g === generoAtivo ? 'active' : ''}"
             onclick="filterGenre('${g}', this)"
             ${g !== 'Todos' ? `style="--gc:${GENRE_COLORS[g] || '#8681BD'}"` : ''}>
       ${g}
@@ -27,16 +27,16 @@ function renderGenres() {
 }
 
 function filterGenre(genre, btn) {
-  activeGenre = genre;
+  generoAtivo = genre;
   document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderGrid();
 }
 
 function renderGrid() {
-  const books = activeGenre === 'Todos'
+  const books = generoAtivo === 'Todos'
     ? CATALOG
-    : CATALOG.filter(b => b.genero === activeGenre);
+    : CATALOG.filter(b => b.genero === generoAtivo);
 
   const grid = document.getElementById('booksGrid');
   grid.innerHTML = books.map((b, i) => {
